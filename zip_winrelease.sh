@@ -32,7 +32,7 @@ else
 	filename=arpcalc-windows-$(hg log -r . --template "{latesttag}-{latesttagdistance}-{node|short}")-$(date +%Y%m%d)-${build}
 fi
 
-zip -r publish/windows/${filename} arpcalc
+zip -r publish/windows/${filename}.zip arpcalc
 echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}\"></head></html>" > publish/windows/latest.html
 echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}\"></head></html>" > publish/windows/index.html
 mv arpcalc $source_dir

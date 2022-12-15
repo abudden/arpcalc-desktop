@@ -44,7 +44,7 @@ else
 fi
 
 mv output/AppDir arpcalc
-tar -czf publish/linux/${filename} arpcalc || exit 6
+tar -czf publish/linux/${filename}.tgz arpcalc || exit 6
 mv arpcalc output/AppDir
 
 echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/linux/${filename}\"></head></html>" > publish/linux/latest.html
