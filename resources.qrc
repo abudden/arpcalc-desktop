@@ -1,0 +1,40 @@
+<RCC>
+	<qresource prefix="/">
+		<file>res/binary.png</file>
+		<file>res/blank.png</file>
+		<file>res/checked.png</file>
+		<file>res/constpad.png</file>
+		<file>res/convpad.png</file>
+		<file>res/decimal.png</file>
+		<file>res/degrees.png</file>
+		<file>res/funcpad.png</file>
+		<file>res/greeklower.png</file>
+		<file>res/greekupper.png</file>
+		<file>res/hexadecimal.png</file>
+		<file>res/icon.png</file>
+		<file>res/icon_large.png</file>
+		<file>res/large.png</file>
+		<file>res/medium.png</file>
+		<file>res/numpad.png</file>
+		<file>res/num_0.png</file>
+		<file>res/num_1.png</file>
+		<file>res/num_16.png</file>
+		<file>res/num_2.png</file>
+		<file>res/num_3.png</file>
+		<file>res/num_32.png</file>
+		<file>res/num_4.png</file>
+		<file>res/num_5.png</file>
+		<file>res/num_6.png</file>
+		<file>res/num_64.png</file>
+		<file>res/num_7.png</file>
+		<file>res/num_8.png</file>
+		<file>res/num_9.png</file>
+		<file>res/octal.png</file>
+		<file>res/optpad.png</file>
+		<file>res/radians.png</file>
+		<file>res/romanlower.png</file>
+		<file>res/romanupper.png</file>
+		<file>res/small.png</file>
+		<file>res/unchecked.png</file>
+	</qresource>
+</RCC>

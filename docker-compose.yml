@@ -1,0 +1,15 @@
+version: "3"
+services:
+    cpparpcalc_jsbuild:
+        build: dockerfiles/js
+        volumes:
+            - .:/src
+        user: 1000:1000
+    cpparpcalc_windows:
+        build: dockerfiles/winqt
+        volumes:
+            - ./:/home/al/project
+    cpparpcalc_linux:
+        build: dockerfiles/linuxqt
+        volumes:
+            - ./:/home/al/project

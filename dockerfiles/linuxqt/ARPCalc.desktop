@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Terminal=false
+Exec=usr/bin/ARPCalc
+Name=ARPCalc
+Icon=ARPCalc

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>ARPCalc</title>
+		<script type="text/javascript" charset="utf-8">
+			resource_root = ".";
+		</script>
+		<link rel="stylesheet" href="./webix/webix.css" type="text/css" charset="utf-8">
+		<link rel="stylesheet" href="./jquery/jquery-ui.css">
+		<script src="./webix/webix.js" type="text/javascript" charset="utf-8"></script>
+		<script src="./jquery/jquery-1.12.4.js"></script>
+		<script src="./jquery/jquery-ui.js"></script>
+		<script src="./zip/zip.min.js"></script>
+		<style>
+			.webix_full_screen {
+				background: #39383A;
+			}
+			.webix_control .webix_disabled_box .webixtype_base {
+				background: #39383A;
+				border: 1px solid #39383A;
+			}
+			.webix_el_label {
+				background-color: #39383A;
+				background: #39383A;
+				color: #FFFFFF;
+			}
+			.webix_view button {
+				background-color: #39383A;
+				background: #39383A;
+				border: 1px solid #FFFFFF;
+			}
+			.webix_view button:hover {
+				background-color: #49484A;
+				background: #49484A;
+				border: 1px solid #FFFFFF;
+			}
+			.webix_view button:active {
+				background-color: #39383A;
+				background: #39393A !important;
+				border: 1px solid #FFFFFF;
+			}
+			.webix_view button:focus {
+				background-color: #39383A;
+				background: #39383A;
+				border: 1px solid #FFFFFF;
+			}
+			.webix_control .webix_disabled_box .webix_img_btn {
+				background: #39383A;
+				border: 1px solid #39383A;
+			}
+			.webix_img_btn {
+				background: #39383A;
+			}
+			.webix_el_box {
+				background: #39383A;
+			}
+			.webix_image {
+				background-size: 100% 100%;
+			}
+			.txtEntry {
+				text-align: right;
+			}
+			.txtMulti {
+				background-color: #39383A;
+				background: #39383A;
+				border: 0px solid #39383A;
+				border-width: 0px 0px 0px 0px;
+				color: #FFFFFF;
+				vertical-align: bottom;
+			}
+			.txtStandardLarge  { font-size: 100%; }
+			.txtStandardMedium { font-size: 90%; }
+			.txtStandardSmall  { font-size: 80%; }
+
+			.txtOptionLarge  { font-size: 90%; }
+			.txtOptionMedium { font-size: 80%; }
+			.txtOptionSmall  { font-size: 60%; }
+
+			.txtMultiLarge     { font-size: 80%; }
+			.txtMultiMedium    { font-size: 80%; }
+			.txtMultiSmall     { font-size: 70%; }
+
+			.txtEntryLarge     { font-size: 200%; }
+			.txtEntryMedium    { font-size: 166%; }
+			.txtEntrySmall     { font-size: 133%; }
+
+			.btnLarge    button { font-size: 100%; }
+			.btnMedium   button { font-size: 83%; }
+			.btnSmall    button { font-size: 66%; }
+
+			.ui-tooltip {
+				background: black;
+				font-size: 12px;
+				color: #fff; 
+			}
+		</style>
+	</head>
+	<body>
+		<script src="../output/js/calclib.js" type="text/javascript" charset="utf-8"></script>
+		<script src="./entrypoint.js" type="text/javascript" charset="utf8"></script>
+		<script src="./selectionui.js" type="text/javascript" charset="utf8"></script>
+		<script src="./ui.js" type="text/javascript" charset="utf-8"></script>
+	</body> 
+</html>

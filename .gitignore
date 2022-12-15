@@ -1,0 +1,12 @@
+libs/gmp-*
+libs/mpfr-*
+debug
+generated_files
+.qmake.stash
+Makefile*
+src/changeset.cpp
+publish
+output
+.hg
+*.taghl
+tags
