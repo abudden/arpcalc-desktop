@@ -7,8 +7,8 @@ I spent a while looking for a decent computer / phone based reverse polish notat
 I've been using this calculator daily since early 2017 so I'm fairly confident it works well.  I've now decided to release it on the website in case others are interested.  Here are a couple of screenshots, one from the Windows version and one from the Android version:
 
 <p align="center">
-  <img src="screenshots/screenshot_header.png" height="500px"/>
-  <img src="screenshots/android_screenshot.png" height="500px"/>
+  <img src="screenshots/screenshot_header.png" height="300px"/>
+  <img src="screenshots/android_screenshot.png" height="300px"/>
 </p>
 
 Note that this repository only contains the code for the Windows, Linux and Web Browser based versions; the Android version is separate.
@@ -42,22 +42,22 @@ For more information, please see [the project website](https://www.cgtk.co.uk/so
 Here are a few screenshots from the Windows version of the application to give you an idea of what it looks like and how it works.
 
 <p align="center">
-  <img src="screenshots/screenshot_exponents.png" height="500px"/>
-  <img src="screenshots/screenshot_functions.png" height="500px"/>
+  <img src="screenshots/screenshot_exponents.png" height="300px"/>
+  <img src="screenshots/screenshot_functions.png" height="300px"/>
 </p>
 
 The left-hand image above (click for bigger!) shows the main number pad, along with the way that numbers are shown (by default) using engineering notation (with exponents in multiples of 3).  The second image shows the function keypad with various functions for scientific and engineering computation.
 
 <p align="center">
-  <img src="screenshots/screenshot_hex.png" height="500px"/>
-  <img src="screenshots/screenshot_store.png" height="500px"/>
+  <img src="screenshots/screenshot_hex.png" height="300px"/>
+  <img src="screenshots/screenshot_store.png" height="300px"/>
 </p>
 
 The left-hand of these two images shows what the calculator looks like in hexadecimal mode.  The top-right panel shows the X value in all four bases for quick comparison.  The right-hand image shows the view that appears when you press STO (store) or RCL (recall): there are lots of locations to store values in for later use.  Values are saved between sessions.
 
 <p align="center">
-  <img src="screenshots/screenshot_conversion_and_help.png" height="500px"/>
-  <img src="screenshots/screenshot_more_conversions.png" height="500px"/>
+  <img src="screenshots/screenshot_conversion_and_help.png" height="300px"/>
+  <img src="screenshots/screenshot_more_conversions.png" height="300px"/>
 </p>
 
 The left-hand of these two images shows the unit conversion keypad.  The conversions are in pairs so the one that has been hovered over (and hence shows help information) converts to degrees Celsius from degrees Fahrenheit.  The one to the immediate right of the button converts the other way (although I can't understand why anyone would want to convert to degrees Fahrenheit!).
@@ -65,8 +65,8 @@ The left-hand of these two images shows the unit conversion keypad.  The convers
 The right-hand image shows the window that appears when you click "More" on the conversions screen (or press `Ctrl-M`).  The conversions are in categories and each category (and unit) has a shortcut key so if there's a conversion you do often, you can learn the key sequence. For example, to convert from cubic centimetres to litres, you press `Ctrl-M`, `R`, `A`, `J`.
 
 <p align="center">
-  <img src="screenshots/screenshot_options.png" height="500px"/>
-  <img src="screenshots/screenshot_more_options.png" height="500px"/>
+  <img src="screenshots/screenshot_options.png" height="300px"/>
+  <img src="screenshots/screenshot_more_options.png" height="300px"/>
 </p>
 
 These two screenshots show the configuration options available in the application.  If you hover over any option, there's a brief description of what it does.
