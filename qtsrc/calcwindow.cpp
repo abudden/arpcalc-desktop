@@ -384,8 +384,8 @@ bool CalcWindow::eventFilter(QObject *object, QEvent *e)
 
 		Qt::Key k = (Qt::Key) keyEvent->key();
 		Qt::KeyboardModifiers m = keyEvent->modifiers();
-		//qDebug() << "Pressed" << k << ": " << QKeySequence(k).toString() << "; with modifiers:"
-		//	<< Qt::hex << m;
+		qDebug() << "Pressed" << k << ": " << QKeySequence(k).toString() << "; with modifiers:"
+			<< Qt::hex << m;
 
 		QString modifiers = "";
 		if ((m & Qt::ControlModifier) != 0) {

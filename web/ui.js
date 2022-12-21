@@ -564,6 +564,7 @@ function enableFirebug() {
 
 function keypressHandler(code, e) {
 	var modifiers = "";
+	console.log("Keypress:", code);
 	if (e.ctrlKey) {
 		modifiers += "Ctrl"
 	}
@@ -595,11 +596,11 @@ function keypressHandler(code, e) {
 	else if (code == 39) { keyname = "Right"; }
 	else if (code == 40) { keyname = "Down"; }
 	else if (code == 46)  { keyname = "Del"; }
-	else if (code == 106) { keyname = "/"; }
+	else if (code == 106) { keyname = "*"; }
 	else if (code == 107) { keyname = "+"; }
 	else if (code == 109) { keyname = "-"; }
 	else if (code == 110) { keyname = "."; }
-	else if (code == 111) { keyname = "*"; }
+	else if (code == 111) { keyname = "/"; }
 	else if (code == 187) { keyname = "="; }
 	else if (code == 189) { keyname = "-"; }
 	else if (code == 190) { keyname = "."; }

@@ -245,6 +245,16 @@ AF AF::round()
 	return r;
 }
 
+void AF::reduce_precision()
+{
+	// Used in conversions where only small number of decimal places
+	// are required.  This is a bit of a crude hack, but seems to work.
+	// I mainly implemented this to deal with some strange rounding
+	// effects associated with convertHoursToHms and convertHmsToHours
+	precision -= 2;
+	mpfr_prec_round(vptr, precision, rounding_mode);
+}
+
 AF AF::floor()
 {
 	AF r;
@@ -425,7 +435,7 @@ int AF::toInt()
 
 std::string AF::toString()
 {
-	char format[] = "%.50RNg";
+	char format[] = "%.256RNg";
 	char *buffer = NULL;
 	std::string out;
 

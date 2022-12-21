@@ -22,5 +22,7 @@ RUN make install
 RUN apt-get update && apt install -y nodejs rsync
 RUN npm install terser -g
 
+RUN apt-get install -y mercurial
+
 WORKDIR /src
 CMD ["bash", "./dockerfiles/js/dkr_build_js.sh"]

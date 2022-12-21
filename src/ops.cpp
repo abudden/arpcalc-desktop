@@ -616,18 +616,23 @@ ErrorCode Stack::convertHmsToHours()
 	AF x = pop();
 	if (x >= 0.0) {
 		hours = x.floor();
+		x.reduce_precision();
 		minutes = x - hours;
 		sign = 1;
 	}
 	else {
 		hours = x.ceil();
+		x.reduce_precision();
 		minutes = hours - x;
 		sign = -1;
 	}
-	minutes = minutes * 100.0;
+	minutes = minutes * 100;
+	minutes.reduce_precision();
 	seconds = minutes - minutes.floor();
+
 	minutes = minutes.floor();
-	seconds = seconds * 100.0;
+	seconds = seconds * 100;
+	seconds.reduce_precision();
 	push(hours + (AF(sign)*((minutes+(seconds/60.0))/60.0)));
 	return NoError;
 }
@@ -639,11 +644,13 @@ ErrorCode Stack::convertHmToHours()
 	AF x = pop();
 	if (x >= AF("0.0")) {
 		hours = x.floor();
+		x.reduce_precision();
 		minutes = x - hours;
 		sign = 1;
 	}
 	else {
 		hours = x.ceil();
+		x.reduce_precision();
 		minutes = hours - x;
 		sign = -1;
 	}
@@ -659,11 +666,13 @@ ErrorCode Stack::convertHoursToHms()
 	AF x = pop();
 	if (x >= AF("0.0")) {
 		hours = x.floor();
+		x.reduce_precision();
 		parthours = x - hours;
 		sign = 1;
 	}
 	else {
 		hours = x.ceil();
+		x.reduce_precision();
 		parthours = hours - x;
 		sign = -1;
 	}
@@ -690,11 +699,13 @@ ErrorCode Stack::convertHoursToHm()
 	AF x = pop();
 	if (x >= 0.0) {
 		hours = x.floor();
+		x.reduce_precision();
 		parthours = x - hours;
 		sign = 1;
 	}
 	else {
 		hours = x.ceil();
+		x.reduce_precision();
 		parthours = hours - x;
 		sign = -1;
 	}

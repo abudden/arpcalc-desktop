@@ -139,6 +139,8 @@ class AF
 		bool operator<=(double & b) const;
 		bool operator>=(double & b) const;
 
+		void reduce_precision();
+
 	private:
 		void init_mpfr();
 		void set_precision(int digits);

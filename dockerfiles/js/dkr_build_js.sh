@@ -19,6 +19,7 @@ emcc --bind -O3 --std=c++20 -x c++ \
 	src/stack.cpp \
 	src/strutils.cpp
 
+changeset=$(hg id -i)
 if [ "$?" == "0" ]
 then
 	for f in webix jquery images zip
@@ -31,20 +32,24 @@ then
 		rsync -arp --delete web/$f/ publish/$f/
 	done
 
+	rm -f publish/*.js
 	for f in web/*.js
 	do
 		echo "Compressing and mangling $f"
-		terser --compress --mangle --output publish/$(basename $f) -- $f || exit 4
+		terser --compress --mangle --output publish/$(basename $f .js)-${changeset}.js -- $f || exit 4
 	done
 
 	echo "Rsyncing compiled code"
 	rsync -arp output/js/ publish/
+
+	mv publish/calclib.js publish/calclib-${changeset}.js
 
 	echo "Adding favicon"
 	cp -f res/icon.ico publish/favicon.ico
 
 	echo "Adding index.html"
 	sed 's@../output/js@.@' web/arpcalc.html > publish/index.html
+	sed -i "s@\(src=\"./[^./]\+\)\.js@\1-${changeset}.js@" publish/index.html
 else
 	exit 3
 fi

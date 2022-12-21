@@ -33,11 +33,11 @@ else
 fi
 
 zip -r publish/windows/${filename}.zip arpcalc
-echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}\"></head></html>" > publish/windows/latest.html
-echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}\"></head></html>" > publish/windows/index.html
+echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}.zip\"></head></html>" > publish/windows/latest.html
+echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}.zip\"></head></html>" > publish/windows/index.html
 mv arpcalc $source_dir
 
-echo "Zip file created as publish/windows/${filename}"
+echo "Zip file created as publish/windows/${filename}.zip"
 echo "To publish on web, run:"
 echo "$ cd publish"
 echo "$ git pull origin master"
