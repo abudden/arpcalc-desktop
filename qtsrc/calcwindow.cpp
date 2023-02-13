@@ -28,6 +28,7 @@
 extern const char * changeset;
 extern const char * version;
 extern const char * builddate;
+extern const int version_nums[];
 
 // Constructor for main widget
 CalcWindow::CalcWindow(QWidget *parent) :
@@ -96,6 +97,9 @@ CalcWindow::CalcWindow(QWidget *parent) :
 	}
 	*/
 	getCurrencyData();
+	if (calc.getOption(CheckForNewVersions)) {
+		getLatestVersion();
+	}
 
 	this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 	setWindowFlags(windowFlags() &(~Qt::WindowMaximizeButtonHint));
@@ -237,6 +241,53 @@ void CalcWindow::pasteValue()
 	}
 
 	updateDisplays();
+}
+
+void CalcWindow::getLatestVersion()
+{
+	QString url = "https://rpn.cgtk.co.uk/latest-desktop.txt";
+	QNetworkAccessManager *manager = new QNetworkAccessManager;
+	manager->get(QNetworkRequest(QUrl(url)));
+	connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gotLatestVersion(QNetworkReply*)));
+}
+
+void CalcWindow::gotLatestVersion(QNetworkReply *reply)
+{
+	bool newer_available = false;
+	if (reply->error() != QNetworkReply::NoError) {
+		qDebug() << "Couldn't download URL";
+		return;
+	}
+	QByteArray data = reply->readAll();
+	qDebug() << "Got data; data length = " << data.size();
+	QString versionString = QString(data);
+
+	QStringList parts = versionString.trimmed().split(',');
+	bool all_zero = true;
+	// Only compare the first 3 parts of the version number
+	for (int i=0;i<3;i++) {
+		if (i >= parts.size()) {
+			qDebug() << "Cannot parse previous version number";
+			return;
+		}
+		bool ok = true;
+		int vnum = parts[i].toInt(&ok, 10);
+		if ( ! ok) {
+			qDebug() << "Invalid version number";
+			return;
+		}
+		if (version_nums[i] < vnum) {
+			newer_available = true;
+		}
+		if (version_nums[i] > 0) {
+			all_zero = false;
+		}
+	}
+
+	if ((newer_available) && ( ! all_zero)) {
+		showToast("A newer version is available");
+		showToast("Update at https://www.cgtk.co.uk/software/arpcalc");
+	}
 }
 
 void CalcWindow::getCurrencyData()

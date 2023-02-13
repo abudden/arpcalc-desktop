@@ -38,9 +38,9 @@ fi
 changeset=$(hg id -i)
 if [[ ${changeset:0-1} == "+" ]]
 then
-	filename=arpcalc-windows-$(date +%Y%m%d)-${changeset}-${build}
+	filename=arpcalc-linux-$(date +%Y%m%d)-${changeset}-${build}
 else
-	filename=arpcalc-windows-$(hg log -r . --template "{latesttag}-{latesttagdistance}-{node|short}")-$(date +%Y%m%d)-${build}
+	filename=arpcalc-linux-$(hg log -r . --template "{latesttag}-{latesttagdistance}-{node|short}")-$(date +%Y%m%d)-${build}
 fi
 
 mv output/AppDir arpcalc

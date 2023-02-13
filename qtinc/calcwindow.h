@@ -55,6 +55,7 @@ class CalcWindow : public QWidget
 		void toOptPad2();
 		void clearToast();
 		void gotCurrencyData(QNetworkReply *reply);
+		void gotLatestVersion(QNetworkReply *reply);
 		void copyVersionInfo();
 		void copyAsValue();
 		void copyFormatted();
@@ -100,6 +101,7 @@ class CalcWindow : public QWidget
 		void cancelPressed();
 		void showToast(QString message, bool isHelp=false);
 		void getCurrencyData();
+		void getLatestVersion();
 		QString unzipByteArray(QByteArray data);
 
 		QList<QList<ClickableLabel *> > buttonArray;

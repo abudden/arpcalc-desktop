@@ -62,6 +62,7 @@ typedef enum _DispOpt {
 	SaveStackOnExit,
 	SaveBaseOnExit,
 	DecimalBaseBias,
+	CheckForNewVersions,
 	AmericanUnits,
 	EuropeanDecimal,
 	ShowHelpOnStart
@@ -82,6 +83,7 @@ const std::map<std::string, DispOpt> DispOptNames = {
 	{NAME(SaveStackOnExit)},
 	{NAME(SaveBaseOnExit)},
 	{NAME(DecimalBaseBias)},
+	{NAME(CheckForNewVersions)},
 	{NAME(AmericanUnits)},
 	{NAME(EuropeanDecimal)},
 	{NAME(ShowHelpOnStart)}

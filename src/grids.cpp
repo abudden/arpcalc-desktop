@@ -226,6 +226,14 @@ std::map<std::string, Option> CommandHandler::getOptions()
 			.clickAction = [](CommandHandler *c) { c->toggleOption(DecimalBaseBias); },
 			.iconAction = [](CommandHandler *c) -> std::string { return c->getCheckIcon(c->getOption(DecimalBaseBias)); },
 			.location = {1, 3, 3}
+		}},
+		{"Check for New Versions", {
+			.helpText = "Check for new versions on start-up.",
+			.clickAction = [](CommandHandler *c) { c->toggleOption(CheckForNewVersions); },
+			.iconAction = [](CommandHandler *c) -> std::string { return c->getCheckIcon(c->getOption(CheckForNewVersions)); },
+			.location = {1, 4, 3},
+			.hideOnPhone = true,
+			.hideOnWeb = true
 		}}
 	};
 

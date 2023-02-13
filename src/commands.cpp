@@ -1539,6 +1539,7 @@ void CommandHandler::setDefaultOptions()
 	setOption(SaveStackOnExit, false);
 	setOption(SaveBaseOnExit, false);
 	setOption(DecimalBaseBias, true);
+	setOption(CheckForNewVersions, true);
 	setOption(AmericanUnits, false);
 	setOption(EuropeanDecimal, false);
 	setOption(ShowHelpOnStart, true);
