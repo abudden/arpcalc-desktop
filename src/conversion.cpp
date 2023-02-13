@@ -102,12 +102,12 @@ ErrorCode Stack::convertMMToInch()
 
 ErrorCode Stack::convertRadiansToDegrees()
 {
-	return convertMultiplier(AF(180.0)/AF::pi());
+	return convertMultiplier(AF(180)/AF::pi());
 }
 
 ErrorCode Stack::convertDegreesToRadians()
 {
-	return convertMultiplier(AF::pi()/180.0);
+	return convertMultiplier(AF::pi()/180);
 }
 
 ErrorCode Stack::convertMilesToKilometres()

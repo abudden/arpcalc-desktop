@@ -321,7 +321,7 @@ ErrorCode Stack::cos()
 {
 	AF x = pop();
 	if ( ! options.contains(Radians)) {
-		x = x * AF::pi() / 100.0;
+		x = x * AF::pi() / AF(180);
 	}
 	push(x.cos());
 	return NoError;
@@ -331,7 +331,7 @@ ErrorCode Stack::sin()
 {
 	AF x = pop();
 	if ( ! options.contains(Radians)) {
-		x = x * AF::pi() / 100.0;
+		x = x * AF::pi() / AF(180);
 	}
 	push(x.sin());
 	return NoError;
@@ -342,7 +342,7 @@ ErrorCode Stack::tan()
 	AF x = pop();
 	AF xr = x;
 	if ( ! options.contains(Radians)) {
-		xr = xr * AF::pi() / 100.0;
+		xr = xr * AF::pi() / AF(180);
 	}
 	if ((xr.remainder(AF::pi()/2.0) == AF(0.0)) && ((xr/(AF::pi()/2.0)).remainder(2.0) == AF(1.0))) {
 		push(x);
@@ -364,7 +364,7 @@ ErrorCode Stack::inversecos()
 	else {
 		AF v = x.acos();
 		if ( ! options.contains(Radians)) {
-			v = v * AF(180.0)/AF::pi();
+			v = v * AF(180)/AF::pi();
 		}
 		push(v);
 	}
@@ -381,7 +381,7 @@ ErrorCode Stack::inversesin()
 	else {
 		AF v = x.asin();
 		if ( ! options.contains(Radians)) {
-			v = v * AF(180.0)/AF::pi();
+			v = v * AF(180)/AF::pi();
 		}
 		push(v);
 	}
@@ -393,7 +393,7 @@ ErrorCode Stack::inversetan()
 	AF x = pop();
 	AF v = x.atan();
 	if ( ! options.contains(Radians)) {
-		v = v * AF(180.0)/AF::pi();
+		v = v * AF(180)/AF::pi();
 	}
 	push(v);
 	return NoError;
@@ -437,7 +437,7 @@ ErrorCode Stack::inversetan2()
 		}
 
 		if ( ! options.contains(Radians)) {
-			v = v * AF(180.0)/AF::pi();
+			v = v * AF(180)/AF::pi();
 		}
 		push(v);
 	}
