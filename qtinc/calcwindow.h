@@ -46,6 +46,8 @@ class CalcWindow : public QWidget
 		void selectFromUnit(QString category);
 		void constantSelected(QString constant);
 		void selectConstant(QString category);
+		void densitySelected(QString densityName);
+		void selectDensity(QString category);
 		void removeChoiceWindow(int x);
 
 	private slots:
@@ -93,6 +95,7 @@ class CalcWindow : public QWidget
 		void moreConversions();
 
 		void constByName();
+		void densityByName();
 
 		void toggleHypMode();
 

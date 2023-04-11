@@ -133,6 +133,7 @@ typedef enum _keyHandlerResult {
 	Key_NextTab,
 	Key_MoreConversions,
 	Key_ConstByName,
+	Key_DensityByName,
 	Key_SI,
 	Key_Store,
 	Key_Recall,

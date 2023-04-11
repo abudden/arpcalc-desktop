@@ -27,6 +27,7 @@ Stack::Stack()
 {
 	populateConversionTable();
 	populateConstants();
+	populateDensities();
 
 	// Seed the random number generator
 	uint32_t seed_val = static_cast<long unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());

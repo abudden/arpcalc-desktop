@@ -74,6 +74,12 @@ typedef struct _Constant {
 	std::string category;
 } Constant;
 
+typedef struct _Density {
+	std::string name;
+	AF value;
+	std::string category;
+} Density;
+
 // Forward definition for the typedef
 class Stack;
 typedef ErrorCode (Stack::*CustomConversionFunction)();
@@ -175,6 +181,8 @@ class Stack
 		ErrorCode convertHoursToHm();
 		void populateConstants();
 		ErrorCode constant(std::string name);
+		void populateDensities();
+		ErrorCode density(std::string name);
 
 		// Conversion.kt
 		ErrorCode convertKelvinToCelsius();
@@ -228,6 +236,7 @@ class Stack
 		void debugStackPrint();
 
 		std::vector<Constant> getConstants();
+		std::vector<Density> getDensities();
 		std::map<std::string, double> getRawCurrencyData();
 
 		/* Things that were done in a lambda in Kotlin: */
@@ -252,6 +261,7 @@ class Stack
 		std::map<std::string, std::string> unitSymbols;
 		std::vector<AF> stack;
 		std::vector<Constant> constants;
+		std::vector<Density> densities;
 
 		void printHistory();
 		void printThisStack(std::vector<AF> s);

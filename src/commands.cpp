@@ -808,6 +808,11 @@ ErrorCode CommandHandler::keypress(std::string key)
 		st.saveHistory();
 		return st.constant(key.substr(6));
 	}
+	if (startsWith(key, "Density-")) {
+		completeEntering(false);
+		st.saveHistory();
+		return st.density(key.substr(8));
+	}
 	if (startsWith(key, "SI-")) {
 		completeEntering(true);
 		st.saveHistory();

@@ -1044,6 +1044,11 @@ std::vector<Constant> Stack::getConstants()
 	return constants;
 }
 
+std::vector<Density> Stack::getDensities()
+{
+	return densities;
+}
+
 /* Things that were done in a lambda in Kotlin: */
 ErrorCode Stack::returnNoError()
 {

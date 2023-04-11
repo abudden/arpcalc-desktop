@@ -469,6 +469,16 @@ function constByName() {
 	});
 }
 
+function densityByName() {
+	var categories = JSON.parse(calc.getDensityCategories());
+	pickFromList("Material Category", categories, function(category) {
+		var densities = JSON.parse(calc.getDensitiesInCategory(category));
+		pickFromList("Material", densities, function(density) {
+			buttonPress("Density-" + density.split(" (")[0]);
+		});
+	});
+}
+
 function toggleHypMode() {
 	hypMode = ! hypMode;
 	tabSelect("funcpad");
@@ -647,6 +657,9 @@ function keypressHandler(code, e) {
 	else if (result["HandlerResult"] == "ConstByName") {
 		constByName();
 	}
+	else if (result["HandlerResult"] == "DensityByName") {
+		densityByName();
+	}
 	else if (result["HandlerResult"] == "SI") {
 		buttonPress("SI");
 	}
@@ -698,6 +711,7 @@ function buttonPress(command) {
 		case "CANCEL"          : cancelPressed(); break;
 		case "MoreConversions" : moreConversions(); break;
 		case "ConstByName"     : constByName(); break;
+		case "DensityByName"   : densityByName(); break;
 		default                : handled = false;
 	}
 

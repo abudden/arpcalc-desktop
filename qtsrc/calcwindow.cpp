@@ -506,6 +506,9 @@ bool CalcWindow::handleKeyPress(Qt::Key key, QString modifiers)
 		case Key_ConstByName:
 			constByName();
 			break;
+		case Key_DensityByName:
+			densityByName();
+			break;
 		case Key_SI:
 			buttonPress("SI");
 			break;
@@ -1017,6 +1020,44 @@ void CalcWindow::constByName()
 	diag->show();
 }
 
+void CalcWindow::densitySelected(QString densityName)
+{
+	buttonPress("Density-" + densityName);
+}
+
+void CalcWindow::selectDensity(QString category)
+{
+	QStringList items;
+
+	for ( const auto &c : calc.st.densities) {
+		QString thisCategory = QString::fromStdString(c.category);
+		QString name = QString::fromStdString(c.name);
+		QString value = QString::fromStdString(AF(c.value).toString());
+		if (category == thisCategory) {
+			 items.append(name + " (" + value + QString::fromUtf8("\u00A0") + "kg/m" + QString::fromUtf8("\u00B3") + ")");
+		}
+	}
+
+	ChoiceWindow *diag = newChoiceWindow("Select Material", items);
+	connect(diag, SIGNAL(itemSelected(QString)), this, SLOT(densitySelected(QString)));
+	diag->show();
+}
+
+void CalcWindow::densityByName()
+{
+	QStringList items;
+	for ( const auto &c : calc.st.densities) {
+		QString category = QString::fromStdString(c.category);
+		if ( ! items.contains(category)) {
+			items.append(category);
+		}
+	}
+
+	ChoiceWindow *diag = newChoiceWindow("Select Category", items);
+	connect(diag, SIGNAL(itemSelected(QString)), this, SLOT(selectDensity(QString)));
+	diag->show();
+}
+
 void CalcWindow::toggleHypMode()
 {
 	hypMode = ! hypMode;
@@ -1057,6 +1098,9 @@ void CalcWindow::buttonPress(QString command)
 	}
 	else if (command == "ConstByName") {
 		constByName();
+	}
+	else if (command == "DensityByName") {
+		densityByName();
 	}
 	else {
 		handled = false;

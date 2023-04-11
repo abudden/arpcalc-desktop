@@ -535,7 +535,7 @@ std::vector< std::vector<BI> > CommandHandler::getGrid(std::string grid)
 				break;
 			}
 		}
-		while (totalCount < 34) {
+		while (totalCount < 32) {
 			if (colCount >= 6) {
 				std::vector<BI> thisRow;
 				vres.push_back(thisRow);
@@ -545,6 +545,8 @@ std::vector< std::vector<BI> > CommandHandler::getGrid(std::string grid)
 			colCount += 1;
 			totalCount += 1;
 		}
+		BI density = {.name="DensityByName", .display="Material Density", .helpText="Material Densities in kg/m&#x00B3;", .doubleWidth=true};
+		vres.back().push_back(density);
 		BI byname = {.name="ConstByName", .display="Add By Name", .doubleWidth=true};
 		vres.back().push_back(byname);
 		result = vres;

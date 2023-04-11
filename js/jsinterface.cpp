@@ -278,6 +278,29 @@ class JSI {
 			return j.dump();
 		}
 
+		std::string getDensityCategories() {
+			std::set<std::string> categories;
+			for (const auto &c : calc.st.densities) {
+				categories.insert(c.category);
+			}
+			json j = categories;
+			return j.dump();
+		}
+
+		std::string getDensitiesInCategory(std::string category) {
+			std::vector<std::string> densities;
+			for (const auto &c : calc.st.densities) {
+				if (category == c.category) {
+					std::string displayName = c.name;
+					displayName += " (" + AF(c.value).toString() +
+						"&nbsp;kg/m&#xB3)";
+					densities.push_back(displayName);
+				}
+			}
+			json j = densities;
+			return j.dump();
+		}
+
 		std::string processCurrencyData(std::string jsonData, std::string datestr) {
 			json j = json::parse(jsonData);
 			// even easier with structured bindings (C++17)
@@ -383,6 +406,8 @@ EMSCRIPTEN_BINDINGS(arpcalc_jsi) {
 
 		.function("getConstantCategories", &JSI::getConstantCategories)
 		.function("getConstantsInCategory", &JSI::getConstantsInCategory)
+		.function("getDensityCategories", &JSI::getDensityCategories)
+		.function("getDensitiesInCategory", &JSI::getDensitiesInCategory)
 
 		.function("handleKey", &JSI::handleKey)
 		.function("getShortcutKeys", &JSI::getShortcutKeys)

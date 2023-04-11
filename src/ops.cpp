@@ -785,3 +785,165 @@ ErrorCode Stack::constant(std::string name)
 	}
 	return UnknownConstant;
 }
+
+void Stack::populateDensities()
+{
+	densities.clear();
+
+	densities.push_back(Density{.name="Aluminium Bronze",       .value=AF("7700"), .category="Metal"});
+	densities.push_back(Density{.name="Aluminium",              .value=AF("2700"), .category="Metal"});
+	densities.push_back(Density{.name="Antimony",               .value=AF("6700"), .category="Metal"});
+	densities.push_back(Density{.name="Beryllium",              .value=AF("1850"), .category="Metal"});
+	densities.push_back(Density{.name="Bismuth",                .value=AF("9800"), .category="Metal"});
+	densities.push_back(Density{.name="Brass",                  .value=AF("8610"), .category="Metal"});
+	densities.push_back(Density{.name="Bronze",                 .value=AF("8815"), .category="Metal"});
+	densities.push_back(Density{.name="Cadmium",                .value=AF("8640"), .category="Metal"});
+	densities.push_back(Density{.name="Cast Iron",              .value=AF("7200"), .category="Metal"});
+	densities.push_back(Density{.name="Chromium",               .value=AF("7100"), .category="Metal"});
+	densities.push_back(Density{.name="Cobalt",                 .value=AF("8800"), .category="Metal"});
+	densities.push_back(Density{.name="Copper",                 .value=AF("8790"), .category="Metal"});
+	densities.push_back(Density{.name="Gallium",                .value=AF("5900"), .category="Metal"});
+	densities.push_back(Density{.name="Gold",                   .value=AF("19290"), .category="Metal"});
+	densities.push_back(Density{.name="Lead",                   .value=AF("11350"), .category="Metal"});
+	densities.push_back(Density{.name="Lithium",                .value=AF("530"), .category="Metal"});
+	densities.push_back(Density{.name="Magnesium",              .value=AF("1740"), .category="Metal"});
+	densities.push_back(Density{.name="Manganese",              .value=AF("7430"), .category="Metal"});
+	densities.push_back(Density{.name="Molybdenum",             .value=AF("10200"), .category="Metal"});
+	densities.push_back(Density{.name="Nickel",                 .value=AF("8900"), .category="Metal"});
+	densities.push_back(Density{.name="Osmium",                 .value=AF("22480"), .category="Metal"});
+	densities.push_back(Density{.name="Palladium",              .value=AF("12000"), .category="Metal"});
+	densities.push_back(Density{.name="Phosphor Bronze",        .value=AF("8800"), .category="Metal"});
+	densities.push_back(Density{.name="Phosphorus",             .value=AF("1820"), .category="Metal"});
+	densities.push_back(Density{.name="Potassium",              .value=AF("860"), .category="Metal"});
+	densities.push_back(Density{.name="Silver",                 .value=AF("10500"), .category="Metal"});
+	densities.push_back(Density{.name="Sodium",                 .value=AF("980"), .category="Metal"});
+	densities.push_back(Density{.name="Steel",                  .value=AF("7820"), .category="Metal"});
+	densities.push_back(Density{.name="Tantalum",               .value=AF("16600"), .category="Metal"});
+	densities.push_back(Density{.name="Tin",                    .value=AF("7280"), .category="Metal"});
+	densities.push_back(Density{.name="Titanium",               .value=AF("4500"), .category="Metal"});
+	densities.push_back(Density{.name="Tungsten Carbide",       .value=AF("14500"), .category="Metal"});
+	densities.push_back(Density{.name="Tungsten",               .value=AF("19200"), .category="Metal"});
+	densities.push_back(Density{.name="Uranium",                .value=AF("19100"), .category="Metal"});
+	densities.push_back(Density{.name="Vanadium",               .value=AF("6100"), .category="Metal"});
+	densities.push_back(Density{.name="Zinc",                   .value=AF("7120"), .category="Metal"});
+	densities.push_back(Density{.name="Agate",                  .value=AF("2600"), .category="Mineral"});
+	densities.push_back(Density{.name="Amber",                  .value=AF("1080"), .category="Mineral"});
+	densities.push_back(Density{.name="Basalt",                 .value=AF("2750"), .category="Mineral"});
+	densities.push_back(Density{.name="Bauxite",                .value=AF("1280"), .category="Mineral"});
+	densities.push_back(Density{.name="Borax",                  .value=AF("850"), .category="Mineral"});
+	densities.push_back(Density{.name="Brick, Fire",            .value=AF("2300"), .category="Mineral"});
+	densities.push_back(Density{.name="Brick",                  .value=AF("1900"), .category="Mineral"});
+	densities.push_back(Density{.name="Calcium",                .value=AF("1550"), .category="Mineral"});
+	densities.push_back(Density{.name="Carbon",                 .value=AF("3510"), .category="Mineral"});
+	densities.push_back(Density{.name="Clay",                   .value=AF("2200"), .category="Mineral"});
+	densities.push_back(Density{.name="Diamond",                .value=AF("3250"), .category="Mineral"});
+	densities.push_back(Density{.name="Flint",                  .value=AF("2600"), .category="Mineral"});
+	densities.push_back(Density{.name="Glass",                  .value=AF("2600"), .category="Mineral"});
+	densities.push_back(Density{.name="Granite",                .value=AF("2700"), .category="Mineral"});
+	densities.push_back(Density{.name="Graphite",               .value=AF("2500"), .category="Mineral"});
+	densities.push_back(Density{.name="Marble",                 .value=AF("2700"), .category="Mineral"});
+	densities.push_back(Density{.name="Opal",                   .value=AF("2200"), .category="Mineral"});
+	densities.push_back(Density{.name="Pyrex",                  .value=AF("2250"), .category="Mineral"});
+	densities.push_back(Density{.name="Quartz",                 .value=AF("2650"), .category="Mineral"});
+	densities.push_back(Density{.name="Silicon",                .value=AF("2330"), .category="Mineral"});
+	densities.push_back(Density{.name="Slate",                  .value=AF("2950"), .category="Mineral"});
+	densities.push_back(Density{.name="Sulphur",                .value=AF("2000"), .category="Mineral"});
+	densities.push_back(Density{.name="Topaz",                  .value=AF("3550"), .category="Mineral"});
+	densities.push_back(Density{.name="Beeswax",                .value=AF("960"), .category="Other"});
+	densities.push_back(Density{.name="Cardboard",              .value=AF("700"), .category="Other"});
+	densities.push_back(Density{.name="Leather",                .value=AF("860"), .category="Other"});
+	densities.push_back(Density{.name="Paper",                  .value=AF("925"), .category="Other"});
+	densities.push_back(Density{.name="Paraffin",               .value=AF("900"), .category="Other"});
+	densities.push_back(Density{.name="ABS",                    .value=AF("1060"), .category="Plastic"});
+	densities.push_back(Density{.name="Acetal",                 .value=AF("1420"), .category="Plastic"});
+	densities.push_back(Density{.name="Acrylic",                .value=AF("1190"), .category="Plastic"});
+	densities.push_back(Density{.name="Bakelite",               .value=AF("1360"), .category="Plastic"});
+	densities.push_back(Density{.name="Epoxy Cast Resin",       .value=AF("1255"), .category="Plastic"});
+	densities.push_back(Density{.name="Expanded Polystyrene",   .value=AF("22"), .category="Plastic"});
+	densities.push_back(Density{.name="HDPE",                   .value=AF("960"), .category="Plastic"});
+	densities.push_back(Density{.name="LDPE",                   .value=AF("910"), .category="Plastic"});
+	densities.push_back(Density{.name="Nylon",                  .value=AF("1145"), .category="Plastic"});
+	densities.push_back(Density{.name="PBT",                    .value=AF("1350"), .category="Plastic"});
+	densities.push_back(Density{.name="PET",                    .value=AF("1350"), .category="Plastic"});
+	densities.push_back(Density{.name="PMMA",                   .value=AF("1200"), .category="Plastic"});
+	densities.push_back(Density{.name="POM",                    .value=AF("1400"), .category="Plastic"});
+	densities.push_back(Density{.name="PP",                     .value=AF("925"), .category="Plastic"});
+	densities.push_back(Density{.name="PS",                     .value=AF("1030"), .category="Plastic"});
+	densities.push_back(Density{.name="PTFE",                   .value=AF("2290"), .category="Plastic"});
+	densities.push_back(Density{.name="PU",                     .value=AF("30"), .category="Plastic"});
+	densities.push_back(Density{.name="PVC",                    .value=AF("1405"), .category="Plastic"});
+	densities.push_back(Density{.name="Poly Carbonate",         .value=AF("1200"), .category="Plastic"});
+	densities.push_back(Density{.name="Teflon",                 .value=AF("2200"), .category="Plastic"});
+	densities.push_back(Density{.name="Alder",                  .value=AF("550"), .category="Wood"});
+	densities.push_back(Density{.name="Apple",                  .value=AF("750"), .category="Wood"});
+	densities.push_back(Density{.name="Ash, European",          .value=AF("710"), .category="Wood"});
+	densities.push_back(Density{.name="Aspen",                  .value=AF("420"), .category="Wood"});
+	densities.push_back(Density{.name="Balsa",                  .value=AF("125"), .category="Wood"});
+	densities.push_back(Density{.name="Bamboo",                 .value=AF("355"), .category="Wood"});
+	densities.push_back(Density{.name="Beech",                  .value=AF("800"), .category="Wood"});
+	densities.push_back(Density{.name="Birch",                  .value=AF("640"), .category="Wood"});
+	densities.push_back(Density{.name="Box",                    .value=AF("1055"), .category="Wood"});
+	densities.push_back(Density{.name="Cedar of Lebanon",       .value=AF("580"), .category="Wood"});
+	densities.push_back(Density{.name="Cedar, Western Red",     .value=AF("380"), .category="Wood"});
+	densities.push_back(Density{.name="Cherry",                 .value=AF("630"), .category="Wood"});
+	densities.push_back(Density{.name="Chestnut, Sweet",        .value=AF("560"), .category="Wood"});
+	densities.push_back(Density{.name="Cypress",                .value=AF("510"), .category="Wood"});
+	densities.push_back(Density{.name="Douglas Fir",            .value=AF("530"), .category="Wood"});
+	densities.push_back(Density{.name="Ebony",                  .value=AF("1220"), .category="Wood"});
+	densities.push_back(Density{.name="Elm",                    .value=AF("570"), .category="Wood"});
+	densities.push_back(Density{.name="Greenheart",             .value=AF("1040"), .category="Wood"});
+	densities.push_back(Density{.name="Hemlock, Western",       .value=AF("500"), .category="Wood"});
+	densities.push_back(Density{.name="Hickory",                .value=AF("765"), .category="Wood"});
+	densities.push_back(Density{.name="Holly",                  .value=AF("760"), .category="Wood"});
+	densities.push_back(Density{.name="Iroko",                  .value=AF("660"), .category="Wood"});
+	densities.push_back(Density{.name="Juniper",                .value=AF("560"), .category="Wood"});
+	densities.push_back(Density{.name="Larch",                  .value=AF("530"), .category="Wood"});
+	densities.push_back(Density{.name="Lignum Vitae",           .value=AF("1250"), .category="Wood"});
+	densities.push_back(Density{.name="Lime, European",         .value=AF("560"), .category="Wood"});
+	densities.push_back(Density{.name="Magnolia",               .value=AF("570"), .category="Wood"});
+	densities.push_back(Density{.name="Mahogany",               .value=AF("675"), .category="Wood"});
+	densities.push_back(Density{.name="Maple",                  .value=AF("685"), .category="Wood"});
+	densities.push_back(Density{.name="Meranti",                .value=AF("710"), .category="Wood"});
+	densities.push_back(Density{.name="Myrtle",                 .value=AF("660"), .category="Wood"});
+	densities.push_back(Density{.name="Oak",                    .value=AF("750"), .category="Wood"});
+	densities.push_back(Density{.name="Pear",                   .value=AF("670"), .category="Wood"});
+	densities.push_back(Density{.name="Pecan",                  .value=AF("770"), .category="Wood"});
+	densities.push_back(Density{.name="Pine, Pitch",            .value=AF("840"), .category="Wood"});
+	densities.push_back(Density{.name="Pine, Scots",            .value=AF("510"), .category="Wood"});
+	densities.push_back(Density{.name="Pine, White",            .value=AF("425"), .category="Wood"});
+	densities.push_back(Density{.name="Pine, Yellow",           .value=AF("420"), .category="Wood"});
+	densities.push_back(Density{.name="Plane, European",        .value=AF("640"), .category="Wood"});
+	densities.push_back(Density{.name="Plum",                   .value=AF("720"), .category="Wood"});
+	densities.push_back(Density{.name="Plywood",                .value=AF("540"), .category="Wood"});
+	densities.push_back(Density{.name="Poplar",                 .value=AF("425"), .category="Wood"});
+	densities.push_back(Density{.name="Redwood, American",      .value=AF("450"), .category="Wood"});
+	densities.push_back(Density{.name="Redwood, European",      .value=AF("510"), .category="Wood"});
+	densities.push_back(Density{.name="Rosewood, Bolivian",     .value=AF("820"), .category="Wood"});
+	densities.push_back(Density{.name="Rosewood, East Indian",  .value=AF("900"), .category="Wood"});
+	densities.push_back(Density{.name="Sapele",                 .value=AF("640"), .category="Wood"});
+	densities.push_back(Density{.name="Spruce",                 .value=AF("450"), .category="Wood"});
+	densities.push_back(Density{.name="Sycamore",               .value=AF("500"), .category="Wood"});
+	densities.push_back(Density{.name="Teak, Indian",           .value=AF("820"), .category="Wood"});
+	densities.push_back(Density{.name="Teak, African",          .value=AF("980"), .category="Wood"});
+	densities.push_back(Density{.name="Teak, Burma",            .value=AF("740"), .category="Wood"});
+	densities.push_back(Density{.name="Utile",                  .value=AF("660"), .category="Wood"});
+	densities.push_back(Density{.name="Walnut",                 .value=AF("670"), .category="Wood"});
+	densities.push_back(Density{.name="Walnut, American Black", .value=AF("630"), .category="Wood"});
+	densities.push_back(Density{.name="Walnut, European",       .value=AF("570"), .category="Wood"});
+	densities.push_back(Density{.name="Willow",                 .value=AF("500"), .category="Wood"});
+	densities.push_back(Density{.name="Yew",                    .value=AF("670"), .category="Wood"});
+	densities.push_back(Density{.name="Zebrawood",              .value=AF("790"), .category="Wood"});
+}
+
+ErrorCode Stack::density(std::string name)
+{
+	std::regex re(" ");
+
+	for (Density density: densities) {
+		if ((density.name == name) || (std::regex_replace(density.name, re, "") == name)) {
+			push(density.value);
+			return NoError;
+		}
+	}
+	return UnknownConstant;
+}
