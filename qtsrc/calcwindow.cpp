@@ -1241,7 +1241,7 @@ void CalcWindow::tabSelect(QString tab)
 		if (local_tab == "funcpad") {
 			local_tab = "romanupperpad";
 		}
-		else if (local_tab == "convtab") {
+		else if (local_tab == "convpad") {
 			local_tab = "romanlowerpad";
 		}
 		else if (local_tab == "constpad") {
