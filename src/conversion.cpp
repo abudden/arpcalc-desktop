@@ -832,7 +832,7 @@ void Stack::populateConversionTable()
 	/* Fuel economy conversions */
 	std::vector<Conversion> fuelEconomyTable = {
 		{"Miles Per Gallon",           "Miles Per Litre",            &Stack::convertMPGToMPL,                            0.0},
-		{"Miles Per Litre",            "Miles Per Gallon",           &Stack::convertMPGToMPL,                            0.0},
+		{"Miles Per Litre",            "Miles Per Gallon",           &Stack::convertMPLToMPG,                            0.0},
 		{"Miles Per Gallon",           "Miles Per US Gallon",        &Stack::convertMPGToUSMPG,                          0.0},
 		{"Miles Per US Gallon",        "Miles Per Gallon",           &Stack::convertUSMPGToMPG,                          0.0},
 		{"Kilometres Per Litre",       "Miles Per Litre",            &Stack::convertKMPLToMPL,                           0.0},
