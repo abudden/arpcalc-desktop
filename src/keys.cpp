@@ -221,6 +221,9 @@ std::vector<std::string> CommandHandler::getShortcutKeys(std::string name)
 			if ((m.ctrlAltCmd == name) || (startsWith(m.ctrlAltCmd, "EXT-") && (m.ctrlAltCmd.substr(4) == name))) {
 				r.push_back(std::make_pair(key.length()+9, "Ctrl+Alt+"+key));
 			}
+			if ((m.altShiftCmd == name) || (startsWith(m.altShiftCmd, "EXT-") && (m.altShiftCmd.substr(4) == name))) {
+				r.push_back(std::make_pair(key.length()+9, "Alt+Shift+"+key));
+			}
 		}
 	}
 
