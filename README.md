@@ -11,7 +11,7 @@ I've been using this calculator daily since early 2017 so I'm fairly confident i
   <img src="screenshots/android_screenshot.png" height="300px"/>
 </p>
 
-Note that this repository only contains the code for the Windows, Linux and Web Browser based versions; the Android version is separate.
+Note that this repository only contains the code for the Windows, Linux and Web Browser based versions; the [Android version](https://github.com/abudden/arpcalc-android) is separate.
 
 For more information, please see [the project website](https://www.cgtk.co.uk/software/arpcalc).
 

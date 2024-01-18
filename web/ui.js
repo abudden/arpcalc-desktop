@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 var returnToNumPad = true;
-var hypMode = false;
+var altFunctionsMode = false;
 var lastTab = "numpad";
 var storeMode = "None";
 var lastStoreTab = "romanupperpad";
@@ -479,8 +479,8 @@ function densityByName() {
 	});
 }
 
-function toggleHypMode() {
-	hypMode = ! hypMode;
+function toggleAltFunctions() {
+	altFunctionsMode = ! altFunctionsMode;
 	tabSelect("funcpad");
 }
 
@@ -533,7 +533,7 @@ function nextTab() {
 			tabSelect("funcpad");
 			break;
 		case "funcpad":
-		case "hypfuncpad":
+		case "altfuncpad":
 			tabSelect("convpad");
 			break;
 		case "convpad":
@@ -704,7 +704,7 @@ function buttonPress(command) {
 
 	switch (command) {
 		case "SI"              : tabSelect("sipad"); break;
-		case "hypmode"         : toggleHypMode(); break;
+		case "altfunc"         : toggleAltFunctions(); break;
 		case "store"           : storePressed(); break;
 		case "recall"          : recallPressed(); break;
 		case "NOP"             : break;

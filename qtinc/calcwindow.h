@@ -97,7 +97,7 @@ class CalcWindow : public QWidget
 		void constByName();
 		void densityByName();
 
-		void toggleHypMode();
+		void toggleAltFunctions();
 
 		void setupWindowSize();
 
@@ -112,7 +112,7 @@ class CalcWindow : public QWidget
 		CommandHandler calc;
 
 		bool returnToNumPad = true;
-		bool hypMode = false;
+		bool altFunctionsMode = false;
 		QString storeMode = "None";
 		QString lastTab = "numpad";
 		QString lastStoreTab = "romanupperpad";

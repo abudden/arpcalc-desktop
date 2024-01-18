@@ -346,7 +346,7 @@ std::vector< std::vector<BI> > CommandHandler::getGrid(std::string grid)
 			// stet
 		}
 	}
-	else if ((grid == "funcpad") || (grid == "hypfuncpad")) {
+	else if ((grid == "funcpad") || (grid == "altfuncpad")) {
 		std::vector< std::vector<BI> > funcGrid{
 			{
 				{"rollUp", "ROLL&uarr;", "Roll the stack up."},
@@ -376,7 +376,7 @@ std::vector< std::vector<BI> > CommandHandler::getGrid(std::string grid)
 				{"square", "x<sup><small>2</small></sup>", "Calculate X&times;X."},
 				{"cube", "x<sup><small>3</small></sup>", "Calculate X&times;X&times;X"},
 				{"power", "y<sup><small>x</small></sup>", "Raise Y to the power of X."},
-				{"percentchange", "&Delta;%", "Calculate the percentage change of X vs Y."}, // TODO: Check operation
+				{"twoscomp", "s2c", "Calculate the signed two's complement of X."},
 				{"remainder", "REM", "Calculate the remainder after an integer division of Y / X."},
 				{"integerdivide", "INTDIV", "Perform an integer division Y / X."}
 			},
@@ -394,12 +394,12 @@ std::vector< std::vector<BI> > CommandHandler::getGrid(std::string grid)
 				{"sin", "sin(x)", "Calculate the sine of X."},
 				{"cos", "cos(x)", "Calculate the cosine of X."},
 				{"tan", "tan(x)", "Calculate the tangent of X."},
-				{"hypmode", "HYP", "Switch to hyperbolic trigonometry mode."}
+				{"altfunc", "ALT", "Show alternative functions (including hyperbolic trigonometry)."}
 			}
 		};
 		result = funcGrid;
 
-		if (grid == "hypfuncpad") {
+		if (grid == "altfuncpad") {
 			result[4][2] = BI{"inversesinh", "sinh<sup><small>-1</small></sup>(x)", "Calculate the inverse hyperbolic sine of X."};
 			result[4][3] = BI{"inversecosh", "cosh<sup><small>-1</small></sup>(x)", "Calculate the inverse hyperbolic cosine of X."};
 			result[4][4] = BI{"inversetanh", "tanh<sup><small>-1</small></sup>(x)", "Calculate the inverse hyperbolic tangent of X."};
@@ -407,6 +407,9 @@ std::vector< std::vector<BI> > CommandHandler::getGrid(std::string grid)
 			result[5][2] = BI{"sinh", "sinh(x)", "Calculate the hyperbolic sine of X."};
 			result[5][3] = BI{"cosh", "cosh(x)", "Calculate the hyperbolic cosine of X."};
 			result[5][4] = BI{"tanh", "tanh(x)", "Calculate the hyperbolic tangent of X."};
+
+			// TODO: Check operation:
+			result[2][3] = BI{"percentchange", "&Delta;%", "Calculate the percentage change of X vs Y."};
 		}
 	}
 	else if (grid == "convpad") {

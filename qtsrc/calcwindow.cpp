@@ -1058,9 +1058,9 @@ void CalcWindow::densityByName()
 	diag->show();
 }
 
-void CalcWindow::toggleHypMode()
+void CalcWindow::toggleAltFunctions()
 {
-	hypMode = ! hypMode;
+	altFunctionsMode = ! altFunctionsMode;
 	tabSelect("funcpad");
 }
 
@@ -1079,8 +1079,8 @@ void CalcWindow::buttonPress(QString command)
 	if (command == "SI") {
 		tabSelect("sipad");
 	}
-	else if (command == "hypmode") {
-		toggleHypMode();
+	else if (command == "altfunc") {
+		toggleAltFunctions();
 	}
 	else if (command == "store") {
 		storePressed();
@@ -1126,7 +1126,7 @@ void CalcWindow::buttonPress(QString command)
 	}
 
 	if ( ! handled) {
-		hypMode = false;
+		altFunctionsMode = false;
 		qDebug() << "Running command " << command;
 		ErrorCode result = calc.keypress(command.toStdString());
 
@@ -1282,8 +1282,8 @@ void CalcWindow::tabSelect(QString tab)
 		return;
 	}
 
-	if (hypMode && (local_tab == "funcpad")) {
-		local_tab = "hypfuncpad";
+	if (altFunctionsMode && (local_tab == "funcpad")) {
+		local_tab = "altfuncpad";
 	}
 
 	setupGrid(local_tab);
@@ -1569,7 +1569,7 @@ void CalcWindow::nextTab()
 	if (lastTab == "numpad") {
 		tabSelect("funcpad");
 	}
-	else if ((lastTab == "funcpad") || (lastTab == "hypfuncpad")) {
+	else if ((lastTab == "funcpad") || (lastTab == "altfuncpad")) {
 		tabSelect("convpad");
 	}
 	else if (lastTab == "convpad") {

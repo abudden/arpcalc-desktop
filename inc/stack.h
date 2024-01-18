@@ -147,6 +147,7 @@ class Stack
 		ErrorCode bitwiseor();
 		ErrorCode bitwisexor();
 		ErrorCode bitwisenot();
+		ErrorCode twoscomplement();
 		ErrorCode absolute();
 		ErrorCode log10();
 		ErrorCode loge();

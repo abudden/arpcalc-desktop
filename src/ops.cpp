@@ -259,6 +259,18 @@ ErrorCode Stack::bitwisenot()
 	return NoError;
 }
 
+ErrorCode Stack::twoscomplement()
+{
+	intmax_t xl = pop().round().toLong();
+	intmax_t mask = getBitMask();
+	xl &= mask;
+	xl = ~xl;
+	xl += 1;
+	xl &= mask;
+	push(AF(xl));
+	return NoError;
+}
+
 ErrorCode Stack::absolute()
 {
 	push(pop().abs());

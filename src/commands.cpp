@@ -853,6 +853,9 @@ ErrorCode CommandHandler::keypress(std::string key)
 	else if (key == "bitwisexor") {
 		completeEntering(takesValue); ec = st.bitwisexor(); st.saveHistory();
 	}
+	else if (key == "twoscomp") {
+		completeEntering(takesValue); ec = st.twoscomplement(); st.saveHistory();
+	}
 	else if (key == "ceiling") {
 		completeEntering(takesValue); ec = st.ceiling(); st.saveHistory();
 	}
