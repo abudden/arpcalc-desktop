@@ -10,3 +10,4 @@ output
 .hg
 *.taghl
 tags
+.*.swp

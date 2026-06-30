@@ -16,7 +16,7 @@ CONFIG(dockerwin) {
 	LIBS += -lgmp -lmpfr
 
 	PYTHON = python3
-	CONFIG += c++latest
+	CONFIG += c++20
 
 	# TODO: tidy up the output files
 	OBJECTS_DIR = generated_files/dockerwin

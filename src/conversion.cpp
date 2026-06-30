@@ -1065,7 +1065,7 @@ ErrorCode Stack::convertLitresToUKPints() {
 
 ErrorCode Stack::convertUSPintsToLitres()
 {
-	return convertPintsToLitres(true);
+	return convertPintsToLitres(false, true);
 }
 
 ErrorCode Stack::convertLitresToUSPints()
