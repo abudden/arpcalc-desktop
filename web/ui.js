@@ -734,7 +734,7 @@ function buttonPress(command) {
 	}
 
 	if ( ! handled) {
-		hypMode = false;
+		altFunctionsMode = false;
 		var result = jscalc.keypress_js(/*calc, */command);
 		handleErrorCode(result);
 
@@ -878,8 +878,8 @@ function tabSelect(tab) {
 		showOptPad2();
 		return;
 	}
-	if (hypMode && (local_tab == "funcpad")) {
-		local_tab = "hypfuncpad";
+	if (altFunctionsMode && (local_tab == "funcpad")) {
+		local_tab = "altfuncpad";
 	}
 
 	var tabGridJSON = jscalc.getJSCompatibleGrid(/*calc, */local_tab);
