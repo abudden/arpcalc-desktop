@@ -96,11 +96,6 @@ CalcWindow::CalcWindow(QWidget *parent) :
 		showToast("Long-press any key for help");
 	}
 	*/
-	getCurrencyData();
-	if (calc.getOption(CheckForNewVersions)) {
-		getLatestVersion();
-	}
-
 	this->layout()->setSizeConstraint(QLayout::SetFixedSize);
 	setWindowFlags(windowFlags() &(~Qt::WindowMaximizeButtonHint));
 
@@ -113,6 +108,14 @@ CalcWindow::~CalcWindow()
 	saveSettings();
 	saveStack();
 	delete settings;
+}
+
+void CalcWindow::startNetworkOperations()
+{
+	getCurrencyData();
+	if (calc.getOption(CheckForNewVersions)) {
+		getLatestVersion();
+	}
 }
 
 void CalcWindow::createContextMenu()

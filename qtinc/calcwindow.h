@@ -49,6 +49,7 @@ class CalcWindow : public QWidget
 		void densitySelected(QString densityName);
 		void selectDensity(QString category);
 		void removeChoiceWindow(int x);
+		void startNetworkOperations();
 
 	private slots:
 		void buttonPressHandler();
