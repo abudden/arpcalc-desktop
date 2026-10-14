@@ -32,7 +32,13 @@ else
 	filename=arpcalc-windows-$(hg log -r . --template "{latesttag}-{latesttagdistance}-{node|short}")-$(date +%Y%m%d)-${build}
 fi
 
-zip -r publish/windows/${filename}.zip arpcalc
+zip -r publish/windows/${filename}.zip arpcalc -x "*.debug"
+# Keep the debug information for this build, for resolving crash.log addresses
+if [ -e arpcalc/ARPCalc.exe.debug ]
+then
+	mkdir -p symbols
+	cp arpcalc/ARPCalc.exe.debug symbols/${filename}.exe.debug
+fi
 echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}.zip\"></head></html>" > publish/windows/latest.html
 echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}.zip\"></head></html>" > publish/windows/index.html
 mv arpcalc $source_dir

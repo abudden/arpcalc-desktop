@@ -19,6 +19,9 @@
 #include <QFont>
 #include <QTimer>
 #include "calcwindow.h"
+#include "crashlog.h"
+
+extern const char * version;
 
 #ifdef Q_OS_WIN
 #include <thread>
@@ -53,6 +56,8 @@ static void prewarmDirect3D()
 
 int main(int argc, char *argv[])
 {
+	installCrashLogger(version);
+
 #ifdef Q_OS_WIN
 	std::thread(prewarmDirect3D).detach();
 #endif

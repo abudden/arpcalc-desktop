@@ -6,6 +6,7 @@ generated_files
 Makefile*
 src/changeset.cpp
 publish
+symbols
 output
 .hg
 *.taghl

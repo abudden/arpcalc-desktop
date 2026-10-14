@@ -27,6 +27,11 @@ CONFIG(dockerwin) {
 
 	CONFIG += link_pkgconfig
 	PKGCONFIG += libzip
+
+	# Build with debug information but move it into ARPCalc.exe.debug (which
+	# isn't included in the zip file), so that the addresses in crash.log
+	# can be turned into source lines with addr2line.
+	CONFIG += force_debug_info separate_debug_info
 }
 else {
 	win32 {
@@ -102,7 +107,8 @@ HEADERS += \
 	inc/strutils.h \
 	qtinc/calcwindow.h \
 	qtinc/choicewindow.h \
-	qtinc/clickablelabel.h
+	qtinc/clickablelabel.h \
+	qtinc/crashlog.h
 SOURCES += \
 	src/arpfloat.cpp \
 	src/changeset.cpp \
@@ -117,6 +123,7 @@ SOURCES += \
 	qtsrc/main.cpp \
 	qtsrc/calcwindow.cpp \
 	qtsrc/choicewindow.cpp \
-	qtsrc/clickablelabel.cpp
+	qtsrc/clickablelabel.cpp \
+	qtsrc/crashlog.cpp
 FORMS += ui/qcalcwindow.ui
 RESOURCES = resources.qrc
