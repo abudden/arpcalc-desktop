@@ -30,6 +30,9 @@ extern const char * version;
 extern const char * builddate;
 extern const int version_nums[];
 
+static const QString currencyDataUrl = "https://www.ecb.int/stats/eurofxref/eurofxref.zip";
+static const QString latestVersionUrl = "https://rpn.cgtk.co.uk/latest-desktop.txt";
+
 // Constructor for main widget
 CalcWindow::CalcWindow(QWidget *parent) :
 	QWidget(parent)
@@ -108,13 +111,62 @@ CalcWindow::~CalcWindow()
 	saveSettings();
 	saveStack();
 	delete settings;
+
+	if (networkThread != NULL) {
+		networkThread->quit();
+		// Don't hold up closing if a request is stuck (e.g. looking up a
+		// proxy): the thread is abandoned and ends with the process.
+		if (networkThread->wait(1000)) {
+			delete networkThread;
+		}
+	}
 }
 
 void CalcWindow::startNetworkOperations()
 {
-	getCurrencyData();
+	// The requests are made from a worker thread because
+	// QNetworkAccessManager does slow things in the thread that makes the
+	// request: it loads the TLS back end and asks Windows for the system
+	// proxy, which with "Automatically detect settings" enabled (the
+	// default) can block for seconds on some networks.  In the GUI thread
+	// that held up the window being drawn.
+	networkThread = new QThread;
+	Downloader *downloader = new Downloader;
+	downloader->moveToThread(networkThread);
+	connect(networkThread, &QThread::finished, downloader, &QObject::deleteLater);
+	connect(downloader, &Downloader::downloaded, this, &CalcWindow::downloaded);
+	networkThread->start();
+
+	QMetaObject::invokeMethod(downloader, "get", Q_ARG(QString, currencyDataUrl));
 	if (calc.getOption(CheckForNewVersions)) {
-		getLatestVersion();
+		QMetaObject::invokeMethod(downloader, "get", Q_ARG(QString, latestVersionUrl));
+	}
+}
+
+void Downloader::get(QString url)
+{
+	if (manager == NULL) {
+		manager = new QNetworkAccessManager(this);
+	}
+	QNetworkReply *reply = manager->get(QNetworkRequest(QUrl(url)));
+	connect(reply, &QNetworkReply::finished, this, [this, reply, url] {
+		if (reply->error() == QNetworkReply::NoError) {
+			emit downloaded(url, reply->readAll());
+		}
+		else {
+			qDebug() << "Couldn't download" << url;
+		}
+		reply->deleteLater();
+	});
+}
+
+void CalcWindow::downloaded(QString url, QByteArray data)
+{
+	if (url == currencyDataUrl) {
+		gotCurrencyData(data);
+	}
+	else if (url == latestVersionUrl) {
+		gotLatestVersion(data);
 	}
 }
 
@@ -246,22 +298,9 @@ void CalcWindow::pasteValue()
 	updateDisplays();
 }
 
-void CalcWindow::getLatestVersion()
-{
-	QString url = "https://rpn.cgtk.co.uk/latest-desktop.txt";
-	QNetworkAccessManager *manager = new QNetworkAccessManager;
-	manager->get(QNetworkRequest(QUrl(url)));
-	connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gotLatestVersion(QNetworkReply*)));
-}
-
-void CalcWindow::gotLatestVersion(QNetworkReply *reply)
+void CalcWindow::gotLatestVersion(QByteArray data)
 {
 	bool newer_available = false;
-	if (reply->error() != QNetworkReply::NoError) {
-		qDebug() << "Couldn't download URL";
-		return;
-	}
-	QByteArray data = reply->readAll();
 	qDebug() << "Got data; data length = " << data.size();
 	QString versionString = QString(data);
 
@@ -291,14 +330,6 @@ void CalcWindow::gotLatestVersion(QNetworkReply *reply)
 		showToast("A newer version is available");
 		showToast("Update at https://www.cgtk.co.uk/software/arpcalc");
 	}
-}
-
-void CalcWindow::getCurrencyData()
-{
-	QString url = "https://www.ecb.int/stats/eurofxref/eurofxref.zip";
-	QNetworkAccessManager *manager = new QNetworkAccessManager;
-	manager->get(QNetworkRequest(QUrl(url)));
-	connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gotCurrencyData(QNetworkReply*)));
 }
 
 QString CalcWindow::unzipByteArray(QByteArray data)
@@ -352,13 +383,8 @@ QString CalcWindow::unzipByteArray(QByteArray data)
 	return result;
 }
 
-void CalcWindow::gotCurrencyData(QNetworkReply *reply)
+void CalcWindow::gotCurrencyData(QByteArray data)
 {
-	if (reply->error() != QNetworkReply::NoError) {
-		qDebug() << "Couldn't download URL";
-		return;
-	}
-	QByteArray data = reply->readAll();
 	qDebug() << "Got data; data length = " << data.size();
 
 	QString unzipped = unzipByteArray(data);
