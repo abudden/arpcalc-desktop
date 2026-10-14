@@ -264,6 +264,11 @@ ErrorCode Stack::convertDateInCurrentYearToDayOfYear() {
 		year_i = parts->tm_year + 1900;
 	}
 
+	if ((m < 1) || (m > 12)) {
+		push(xval);
+		return InvalidConversion;
+	}
+
 	static const std::vector<int> days_in_month = {
 		31, 29, 31, 30, 31, 30,
 		31, 31, 30, 31, 30, 31

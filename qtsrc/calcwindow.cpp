@@ -306,50 +306,52 @@ QString CalcWindow::unzipByteArray(QByteArray data)
 	const char *buffer = data.constData();
 
 	zip_error_t err;
+	zip_error_init(&err);
 
 	zip_source_t *zsource = zip_source_buffer_create(buffer, data.size(),
 			0, &err);
 	if (zsource == NULL) {
 		qDebug() << "zip source not initialised";
+		zip_error_fini(&err);
 		return "";
 	}
 
 	zip *z = zip_open_from_source(zsource, ZIP_RDONLY, &err);
+	zip_error_fini(&err);
 	if (z == NULL) {
 		qDebug() << "zip not opened";
+		zip_source_free(zsource);
 		return "";
 	}
 
 	struct zip_stat st;
 	zip_stat_init(&st);
 	int e =zip_stat_index(z, 0, 0, &st);
-	if (e != 0) {
+	if ((e != 0) || ((st.valid & ZIP_STAT_SIZE) == 0)) {
 		qDebug() << "No files found in zip";
+		zip_discard(z);
 		return "";
 	}
-
-	char *contents = new char[st.size];
 
 	zip_file *f = zip_fopen_index(z, 0, 0);
 	if (f == NULL) {
 		qDebug() << "Couldn't open first file in archive";
+		zip_discard(z);
 		return "";
 	}
-	int bytes_read = zip_fread(f, contents, st.size);
+	// The file isn't NUL-terminated, so keep track of the length
+	// explicitly rather than treating the buffer as a C string.
+	QByteArray contents(st.size, Qt::Uninitialized);
+	zip_int64_t bytes_read = zip_fread(f, contents.data(), st.size);
+	zip_fclose(f);
+	zip_discard(z);
 	if (bytes_read <= 0) {
 		qDebug() << "Reading uncompressed data failed";
 		return "";
 	}
-	e = zip_fclose(f);
-	if (e != 0) {
-		qDebug() << "Couldn't close file";
-		return "";
-	}
+	contents.truncate(bytes_read);
 
-	zip_discard(z);
-	QString result(contents);
-	std::destroy_at(contents);
-	return result;
+	return QString::fromUtf8(contents);
 }
 
 void CalcWindow::gotCurrencyData(QNetworkReply *reply)
@@ -377,6 +379,11 @@ void CalcWindow::gotCurrencyData(QNetworkReply *reply)
 			continue;
 		}
 		rows.append(line.split(","));
+	}
+
+	if ((rows.size() < 2) || (rows[1].size() < rows[0].size())) {
+		qDebug() << "Unexpected currency data format";
+		return;
 	}
 
 	std::map<std::string, double> wrtEuro;

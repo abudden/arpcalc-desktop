@@ -134,7 +134,7 @@ void Stack::push(std::vector<AF> vs)
 		stack.push_back(n);
 	}
 	if (options.contains(ReplicateStack)) {
-		while (stack.size() < 4) {
+		while (stack.size() > 4) {
 			// Remove first element
 			stack.erase(stack.begin());
 		}

@@ -207,8 +207,11 @@ void CommandHandler::updateValueFromText()
 		converter >> std::hex >> value;
 		dspState.enteredValue = AF(value);
 	}
-	else if (dspBase == baseBinary) {
-		intmax_t value = std::stoll(dspState.enteredText.c_str(), NULL, 2);
+	else if ((dspBase == baseBinary) || (dspBase == baseOctal)) {
+		// strtoll rather than std::stoll: stoll throws (and so crashes the
+		// app) if the entered text overflows 64 bits.
+		int radix = (dspBase == baseBinary) ? 2 : 8;
+		intmax_t value = std::strtoll(dspState.enteredText.c_str(), NULL, radix);
 		dspState.enteredValue = AF(value);
 	}
 	else {
@@ -336,7 +339,10 @@ void CommandHandler::backspace()
 {
 	if (dspState.entering && ( ! dspState.justPressedEnter)) {
 		int l = dspState.enteredText.length();
-		if (l == 1) {
+		// l == 0 is the state left by clearButton(): calling pop_back() on
+		// an empty string corrupts it (its length wraps round), which
+		// crashes the app on a later key press.
+		if (l <= 1) {
 			clearButton();
 		}
 		else {
@@ -1335,10 +1341,10 @@ std::string CommandHandler::formatDecimal(AF value, bool isX, bool constHelpMode
 				}
 				else if (total_length > (int) newformatted.length()) {
 					std::string padStr = "";
-					while (padStr.length() < (newformatted.length() - total_length)) {
+					while ((int) padStr.length() < (total_length - (int) newformatted.length())) {
 						padStr += "0";
 					}
-					newformatted + padStr;
+					newformatted += padStr;
 				}
 				else {
 					/* NOP */
