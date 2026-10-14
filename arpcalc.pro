@@ -107,8 +107,7 @@ HEADERS += \
 	inc/strutils.h \
 	qtinc/calcwindow.h \
 	qtinc/choicewindow.h \
-	qtinc/clickablelabel.h \
-	qtinc/crashlog.h
+	qtinc/clickablelabel.h
 SOURCES += \
 	src/arpfloat.cpp \
 	src/changeset.cpp \
@@ -123,7 +122,10 @@ SOURCES += \
 	qtsrc/main.cpp \
 	qtsrc/calcwindow.cpp \
 	qtsrc/choicewindow.cpp \
-	qtsrc/clickablelabel.cpp \
-	qtsrc/crashlog.cpp
+	qtsrc/clickablelabel.cpp
 FORMS += ui/qcalcwindow.ui
 RESOURCES = resources.qrc
+
+# Writes crash.log if the app crashes (Windows only)
+HEADERS += qtinc/crashlog.h
+SOURCES += qtsrc/crashlog.cpp
