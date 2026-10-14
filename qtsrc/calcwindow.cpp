@@ -597,6 +597,16 @@ void CalcWindow::setupWindowSize()
 	ui.btnOptPad->setIconSize(QSize(iconSize, iconSize));
 }
 
+// QWidget::setStyleSheet() re-polishes the widget even if the style sheet
+// hasn't changed, which is slow, and applyStyles() and setupGrid() run on
+// every key press.
+static void setStyleSheetIfChanged(QWidget *widget, const QString &styleSheet)
+{
+	if (widget->styleSheet() != styleSheet) {
+		widget->setStyleSheet(styleSheet);
+	}
+}
+
 void CalcWindow::applyStyles()
 {
 	static QString button_style = ""
@@ -647,29 +657,29 @@ void CalcWindow::applyStyles()
 		for (int c=0;c<6;c++) {
 			ClickableLabel *btn = buttonArray[r][c];
 			btn->setTextFormat(Qt::RichText);
-			btn->setStyleSheet(button_style);
+			setStyleSheetIfChanged(btn, button_style);
 			btn->setAlignment(Qt::AlignCenter);
 		}
 	}
 
 	ui.lblEntry->setTextFormat(Qt::RichText);
-	ui.lblEntry->setStyleSheet(entry_style);
+	setStyleSheetIfChanged(ui.lblEntry, entry_style);
 
 	ui.lblStack->setTextFormat(Qt::RichText);
-	ui.lblStack->setStyleSheet(stackbase_style);
+	setStyleSheetIfChanged(ui.lblStack, stackbase_style);
 
 	ui.lblEntry->setTextFormat(Qt::RichText);
-	ui.lblBase->setStyleSheet(stackbase_style);
+	setStyleSheetIfChanged(ui.lblBase, stackbase_style);
 
-	ui.lblStatusExponent->setStyleSheet(status_style);
-	ui.lblStatusAngular->setStyleSheet(status_style);
-	ui.lblStatusBase->setStyleSheet(status_style);
+	setStyleSheetIfChanged(ui.lblStatusExponent, status_style);
+	setStyleSheetIfChanged(ui.lblStatusAngular, status_style);
+	setStyleSheetIfChanged(ui.lblStatusBase, status_style);
 
-	ui.btnNumPad->setStyleSheet(tab_button_style);
-	ui.btnFuncPad->setStyleSheet(tab_button_style);
-	ui.btnConvPad->setStyleSheet(tab_button_style);
-	ui.btnConstPad->setStyleSheet(tab_button_style);
-	ui.btnOptPad->setStyleSheet(tab_button_style);
+	setStyleSheetIfChanged(ui.btnNumPad, tab_button_style);
+	setStyleSheetIfChanged(ui.btnFuncPad, tab_button_style);
+	setStyleSheetIfChanged(ui.btnConvPad, tab_button_style);
+	setStyleSheetIfChanged(ui.btnConstPad, tab_button_style);
+	setStyleSheetIfChanged(ui.btnOptPad, tab_button_style);
 
 	const QMargins margins(0, 0, 0, 0);
 	ui.lytTabButtons->setContentsMargins(margins);
@@ -1351,7 +1361,7 @@ void CalcWindow::setupGrid(QString gridname)
 			btn->setText(QString::fromStdString(cell.display));
 			btn->setProperty("name", QString::fromStdString(cell.name));
 			if (cell.hidden == true) {
-				btn->setStyleSheet(hidden_button_style);
+				setStyleSheetIfChanged(btn, hidden_button_style);
 			}
 			btn->setVisible(true);
 			QString helpText = QString::fromStdString(cell.helpText);
@@ -1433,6 +1443,7 @@ void CalcWindow::optionClicked(QString name)
 	optList[name].clickAction(&calc);
 	updateOptionIcons();
 	updateDisplays();
+	saveSettings();
 }
 
 void CalcWindow::optionHelp(QString name)
@@ -1467,7 +1478,6 @@ void CalcWindow::updateOptionIcons()
 			optIcons[name]->setIcon(QIcon(newicon));
 		}
 	}
-	saveSettings();
 }
 
 void CalcWindow::createOptPad()
