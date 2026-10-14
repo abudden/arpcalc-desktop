@@ -102,7 +102,8 @@ HEADERS += \
 	inc/strutils.h \
 	qtinc/calcwindow.h \
 	qtinc/choicewindow.h \
-	qtinc/clickablelabel.h
+	qtinc/clickablelabel.h \
+	qtinc/startuptiming.h
 SOURCES += \
 	src/arpfloat.cpp \
 	src/changeset.cpp \
@@ -117,6 +118,7 @@ SOURCES += \
 	qtsrc/main.cpp \
 	qtsrc/calcwindow.cpp \
 	qtsrc/choicewindow.cpp \
-	qtsrc/clickablelabel.cpp
+	qtsrc/clickablelabel.cpp \
+	qtsrc/startuptiming.cpp
 FORMS += ui/qcalcwindow.ui
 RESOURCES = resources.qrc

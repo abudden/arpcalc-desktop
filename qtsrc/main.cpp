@@ -19,6 +19,7 @@
 #include <QFont>
 #include <QTimer>
 #include "calcwindow.h"
+#include "startuptiming.h"
 
 #ifdef Q_OS_WIN
 #include <thread>
@@ -53,12 +54,15 @@ static void prewarmDirect3D()
 
 int main(int argc, char *argv[])
 {
+	StartupTiming timing(argc, argv);
+
 #ifdef Q_OS_WIN
 	std::thread(prewarmDirect3D).detach();
 #endif
 
 	// Creates an instance of QApplication
 	QApplication a(argc, argv);
+	timing.mark("QApplication");
 
 #ifdef Q_OS_WIN
 	// Explicit font list (Windows only: these families don't exist elsewhere,
@@ -71,7 +75,10 @@ int main(int argc, char *argv[])
 
 	// This is our MainWidget class containing our GUI and functionality
 	CalcWindow w;
+	timing.mark("window created");
+	timing.logAfterFirstPaint(&w);
 	w.show(); // Show main window
+	timing.mark("shown");
 
 	QTimer::singleShot(0, &w, &CalcWindow::startNetworkOperations);
 
