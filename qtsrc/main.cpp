@@ -69,6 +69,24 @@ int main(int argc, char *argv[])
 	a.setFont(f);
 #endif
 
+	// Tooltips pick up the main window's dark background (its style sheet's
+	// background-color has no selector, so applies to them too) but not a
+	// text colour, so with recent Qt versions they were black on dark grey.
+	// Set the colours explicitly: the style sheet for styles that honour it
+	// and the palette for any that don't.  Done before any widgets exist so
+	// that nothing needs to be re-polished.
+	QPalette tipPalette = QToolTip::palette();
+	tipPalette.setColor(QPalette::ToolTipText, QColor(255, 255, 255));
+	tipPalette.setColor(QPalette::ToolTipBase, QColor(57, 56, 58));
+	QToolTip::setPalette(tipPalette);
+	a.setStyleSheet(""
+		"QToolTip {"
+			"color: rgb(255, 255, 255);"
+			"background-color: rgb(57, 56, 58);"
+			"border: 1px solid rgb(255, 255, 255);"
+		"}"
+		);
+
 	// This is our MainWidget class containing our GUI and functionality
 	CalcWindow w;
 	w.show(); // Show main window
