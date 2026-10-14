@@ -12,6 +12,10 @@ elif [ "$1" == "docker" ]
 then
 	source_dir=output/dockerwin
 	build=dk
+elif [ "$1" == "dockerstatic" ]
+then
+	source_dir=output/dockerwinstatic
+	build=dks
 else
 	echo "Unrecognised build type"
 	exit 1

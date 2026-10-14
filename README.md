@@ -88,6 +88,14 @@ The release builds are compiled with docker-compose.  A brief explanation of the
 
 To build the docker containers on a Linux system, run `docker-compose build`.  This will take quite a long time as it compiles MXE from scratch (as the MXE repositories don't, at the time of writing, include very recent versions of GCC, upon which this code relies).
 
+There is also an experimental statically-linked Windows build (a single `ARPCalc.exe` with no DLLs, which should start faster).  It uses the static MXE target that the Windows container already builds and only runs when asked for: `docker compose up cpparpcalc_windows_static`.  The zip file name ends in `-dks`.
+
+## Start-up Time
+
+Run `ARPCalc.exe --startup-timing` to append a line to `startup-timing.log` (next to `ARPCalc.exe`, or in `%TEMP%` if that folder isn't writable) giving the time at which each stage of start-up was reached.  The times are measured from when Windows created the process, so `main()` is the time taken to load the DLLs (including any antivirus scanning of them), and the CPU time shows how much of the total was spent working rather than waiting.
+
+When installing a new build, delete the old `plugins` folder (and old DLLs) rather than unzipping over it: Qt reads every plugin it finds in the plugin folders it uses, so leftover plugins slow start-up.
+
 ## Build Notes for Compilation On Windows
 
 Compiled using MSYS2 on Windows (or via docker cross compilation).

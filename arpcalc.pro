@@ -13,17 +13,22 @@ win32 {
 }
 
 CONFIG(dockerwin) {
-	LIBS += -lgmp -lmpfr
+	# mpfr before gmp so that static linking works
+	LIBS += -lmpfr -lgmp
 
 	PYTHON = python3
 	CONFIG += c++20
 
+	# Built against MXE's static Qt by build_dockerwin_static.sh
+	BUILDNAME = dockerwin
+	qtConfig(static): BUILDNAME = dockerwinstatic
+
 	# TODO: tidy up the output files
-	OBJECTS_DIR = generated_files/dockerwin
-	MOC_DIR = generated_files/dockerwin
-	RCC_DIR = generated_files/dockerwin
-	UI_DIR = generated_files/dockerwin
-	DESTDIR = output/dockerwin
+	OBJECTS_DIR = generated_files/$$BUILDNAME
+	MOC_DIR = generated_files/$$BUILDNAME
+	RCC_DIR = generated_files/$$BUILDNAME
+	UI_DIR = generated_files/$$BUILDNAME
+	DESTDIR = output/$$BUILDNAME
 
 	CONFIG += link_pkgconfig
 	PKGCONFIG += libzip

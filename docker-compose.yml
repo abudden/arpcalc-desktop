@@ -8,6 +8,14 @@ services:
         build: dockerfiles/winqt
         volumes:
             - ./:/home/al/project
+    # Experimental: statically-linked Windows build, which should start
+    # faster.  Only run when asked for: docker compose up cpparpcalc_windows_static
+    cpparpcalc_windows_static:
+        build: dockerfiles/winqt
+        volumes:
+            - ./:/home/al/project
+        command: ["bash", "dockerfiles/winqt/build_dockerwin_static.sh"]
+        profiles: ["static"]
     cpparpcalc_linux:
         build: dockerfiles/linuxqt
         volumes:
