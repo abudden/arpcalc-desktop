@@ -47,6 +47,7 @@ class StartupTiming : public QObject
 		QElapsedTimer clock;
 		qint64 beforeMain = -1; // ms from process creation to this object
 		QStringList stages;
+		QString styleName;
 };
 
 #endif // STARTUPTIMING_H

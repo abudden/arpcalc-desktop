@@ -87,6 +87,11 @@ void StartupTiming::mark(QString stage)
 	}
 	qint64 t = clock.elapsed() + qMax(beforeMain, (qint64) 0);
 	stages << QString("%1 %2 ms").arg(stage).arg(t);
+	// Before any style sheets are applied: after that, the style's name is
+	// that of the style sheet style (which is empty)
+	if (styleName.isEmpty() && (qobject_cast<QApplication *>(QCoreApplication::instance()) != NULL)) {
+		styleName = QApplication::style()->name();
+	}
 }
 
 void StartupTiming::logAfterFirstPaint(QWidget *window)
@@ -121,7 +126,7 @@ void StartupTiming::write()
 		return;
 	}
 	QString line = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
-	line += QString(" Qt %1, %2 style: ").arg(qVersion(), QApplication::style()->name());
+	line += QString(" Qt %1, %2 style: ").arg(qVersion(), styleName);
 	line += stages.join(", ");
 	line += "\n";
 	f.write(line.toUtf8());
