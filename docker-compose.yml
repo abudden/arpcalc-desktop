@@ -16,6 +16,14 @@ services:
             - ./:/home/al/project
         command: ["bash", "dockerfiles/winqt/build_dockerwin_static.sh"]
         profiles: ["static"]
+    # Windows build from Fedora's pre-built MinGW packages (a much quicker
+    # image build than MXE).  Only run when asked for:
+    # docker compose up cpparpcalc_windows_fedora
+    cpparpcalc_windows_fedora:
+        build: dockerfiles/winfedora
+        volumes:
+            - ./:/home/al/project
+        profiles: ["fedora"]
     cpparpcalc_linux:
         build: dockerfiles/linuxqt
         volumes:

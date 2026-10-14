@@ -19,9 +19,12 @@ CONFIG(dockerwin) {
 	PYTHON = python3
 	CONFIG += c++20
 
-	# Built against MXE's static Qt by build_dockerwin_static.sh
-	BUILDNAME = dockerwin
-	qtConfig(static): BUILDNAME = dockerwinstatic
+	# Output folder name: the build scripts can set this (e.g. for the
+	# Fedora build) and static builds (build_dockerwin_static.sh) get their own
+	isEmpty(BUILDNAME) {
+		BUILDNAME = dockerwin
+		qtConfig(static): BUILDNAME = dockerwinstatic
+	}
 
 	# TODO: tidy up the output files
 	OBJECTS_DIR = generated_files/$$BUILDNAME
