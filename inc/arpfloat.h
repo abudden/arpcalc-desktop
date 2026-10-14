@@ -18,6 +18,7 @@
 #ifndef ARPFLOAT_H
 #define ARPFLOAT_H
 
+#include <cstdint> // Before mpfr.h, which only declares its intmax_t functions if it is included
 #include <string>
 #include <mpfr.h>
 
