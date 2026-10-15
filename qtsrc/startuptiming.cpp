@@ -19,6 +19,10 @@
 #include <cstring>
 #include "startuptiming.h"
 
+#ifndef ARPCALC_BUILD_NAME
+#define ARPCALC_BUILD_NAME "unknown build"
+#endif
+
 #ifdef Q_OS_WIN
 #include <QtCore/qt_windows.h>
 
@@ -63,20 +67,42 @@ static qint64 cpuTimeMs()
 }
 #endif
 
+StartupTiming *StartupTiming::instance = NULL;
+
 StartupTiming::StartupTiming(int argc, char *argv[])
 {
 	for (int i=1;i<argc;i++) {
 		if (strcmp(argv[i], "--startup-timing") == 0) {
 			enabled = true;
 		}
+		else {
+			// Kept from here as QApplication removes the options it handles
+			// (e.g. -platform windows:fontengine=gdi) from arguments()
+			options << QString::fromLocal8Bit(argv[i]);
+		}
 	}
 	if ( ! enabled) {
 		return;
 	}
+	instance = this;
 	beforeMain = msSinceProcessCreation();
 	clock.start();
 	if (beforeMain >= 0) {
 		stages << QString("main() %1 ms").arg(beforeMain);
+	}
+}
+
+StartupTiming::~StartupTiming()
+{
+	if (instance == this) {
+		instance = NULL;
+	}
+}
+
+void StartupTiming::markStage(QString stage)
+{
+	if (instance != NULL) {
+		instance->mark(stage);
 	}
 }
 
@@ -126,7 +152,17 @@ void StartupTiming::write()
 		return;
 	}
 	QString line = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
-	line += QString(" Qt %1, %2 style: ").arg(qVersion(), styleName);
+	// Which build this is (set by the build scripts, e.g. dockerwinstatic)
+	line += " " ARPCALC_BUILD_NAME;
+#ifdef __VERSION__
+	line += " (GCC " __VERSION__ ")";
+#endif
+	line += QString(", Qt %1, %2 style").arg(qVersion(), styleName);
+	// Any other options, so that runs with different options can be told apart
+	if ( ! options.isEmpty()) {
+		line += " [" + options.join(" ") + "]";
+	}
+	line += ": ";
 	line += stages.join(", ");
 	line += "\n";
 	f.write(line.toUtf8());

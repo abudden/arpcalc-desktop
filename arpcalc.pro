@@ -30,6 +30,9 @@ CONFIG(dockerwin) {
 	UI_DIR = generated_files/$$BUILDNAME
 	DESTDIR = output/$$BUILDNAME
 
+	# Recorded in startup-timing.log
+	DEFINES += ARPCALC_BUILD_NAME=\\\"$$BUILDNAME\\\"
+
 	CONFIG += link_pkgconfig
 	PKGCONFIG += libzip
 }

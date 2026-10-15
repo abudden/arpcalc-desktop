@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
 	QFont f;
 	f.setFamilies({"Segoe UI", "Segoe UI Symbol", "Cambria Math"});
 	a.setFont(f);
+	timing.mark("font");
 #endif
 
 	// This is our MainWidget class containing our GUI and functionality

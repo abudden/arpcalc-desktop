@@ -34,8 +34,12 @@ class StartupTiming : public QObject
 {
 	public:
 		StartupTiming(int argc, char *argv[]);
+		~StartupTiming();
 		void mark(QString stage);
 		void logAfterFirstPaint(QWidget *window);
+
+		// Records a stage from elsewhere in the app (if enabled)
+		static void markStage(QString stage);
 
 	protected:
 		bool eventFilter(QObject *object, QEvent *event) override;
@@ -48,6 +52,9 @@ class StartupTiming : public QObject
 		qint64 beforeMain = -1; // ms from process creation to this object
 		QStringList stages;
 		QString styleName;
+		QStringList options;
+
+		static StartupTiming *instance;
 };
 
 #endif // STARTUPTIMING_H
