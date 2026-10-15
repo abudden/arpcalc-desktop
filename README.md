@@ -88,6 +88,8 @@ The release builds are compiled with docker-compose.  A brief explanation of the
 
 To build the docker containers on a Linux system, run `docker-compose build`.  This will take quite a long time as it compiles MXE from scratch (as the MXE repositories don't, at the time of writing, include very recent versions of GCC, upon which this code relies).
 
+There is also a Windows build that uses Fedora's pre-built MinGW compiler and Qt packages instead of MXE: its image builds in minutes rather than hours.  It only runs when asked for: `docker compose up cpparpcalc_windows_fedora`.  The zip file name ends in `-dkf`.
+
 There is also an experimental statically-linked Windows build (a single `ARPCalc.exe` with no DLLs, which should start faster).  It uses the static MXE target that the Windows container already builds and only runs when asked for: `docker compose up cpparpcalc_windows_static`.  The zip file name ends in `-dks`.
 
 ## Start-up Time
