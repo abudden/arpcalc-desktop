@@ -12,7 +12,7 @@ split_debug_info()
 {
 	local objcopy=${MXETARGET}-objcopy
 	${objcopy} --only-keep-debug "$1" "$1.debug" && \
-		${objcopy} --strip-debug "$1" && \
+		${objcopy} --strip-all "$1" && \
 		${objcopy} --add-gnu-debuglink="$1.debug" "$1"
 }
 
