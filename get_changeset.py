@@ -5,8 +5,6 @@ import sys
 import os
 import datetime
 
-if os.path.exists('src/changeset.cpp'):
-    os.remove('src/changeset.cpp')
 
 def ord(n):
     return str(n)+("th" if 4<=n%100<=20 else {1:"st",2:"nd",3:"rd"}.get(n%10, "th"))
@@ -56,12 +54,16 @@ except:
 
 if have_changeset:
     version_num_str = ','.join(['%d' % i for i in version_nums])
-    with open('src/changeset.cpp', 'w', encoding='utf8') as fh:
+    # Write a new file and then rename it, rather than deleting the old one
+    # first: other builds running at the same time may be compiling it
+    tmpname = 'src/changeset.cpp.%d' % os.getpid()
+    with open(tmpname, 'w', encoding='utf8') as fh:
         fh.write('const char * changeset = "' + changeset + '";\n')
         fh.write('const char * version = "' + version + '";\n')
         fh.write('const char * builddate = "Compiled ' +
                 dtStylish(datetime.datetime.now(), "{th} %B %Y") + '";\n')
         fh.write('extern const int version_nums[4] = {' + version_num_str + '};\n')
+    os.replace(tmpname, 'src/changeset.cpp')
     if os.path.exists('publish'):
         with open('publish/latest-desktop.txt', 'w', encoding='utf8') as fh:
             fh.write(version_num_str + "\n")

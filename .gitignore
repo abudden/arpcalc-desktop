@@ -11,3 +11,5 @@ output
 *.taghl
 tags
 .*.swp
+staging.*
+src/changeset.cpp.*

@@ -11,6 +11,12 @@ MXETARGET=x86_64-w64-mingw32.shared
 #   styles: the native Windows style
 #   tls: for downloading the currency data over https
 
+
+# Start from an empty output folder: make clean leaves the DLLs and plugins,
+# and mxedeployqt doesn't replace existing ones, so a new ARPCalc.exe could
+# be zipped with an older Qt.
+rm -rf output/dockerwin
+
 /opt/mxe/usr/${MXETARGET}/qt6/bin/qmake -o Makefile.dockerwin "CONFIG+=dockerwin" && \
 	make -f Makefile.dockerwin clean && \
 	make -f Makefile.dockerwin && \

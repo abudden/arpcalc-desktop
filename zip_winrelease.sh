@@ -26,7 +26,10 @@ else
 fi
 
 
-mv $source_dir arpcalc
+# Stage in a folder of its own so that builds running at the same time
+# don't zip each other's files
+staging=$(mktemp -d staging.XXXXXX)
+mv $source_dir $staging/arpcalc
 if [ ! -e publish/windows ]
 then
 	mkdir -p publish/windows
@@ -40,10 +43,11 @@ else
 	filename=arpcalc-windows-$(hg log -r . --template "{latesttag}-{latesttagdistance}-{node|short}")-$(date +%Y%m%d)-${build}
 fi
 
-zip -r publish/windows/${filename}.zip arpcalc
+(cd $staging && zip -r ../publish/windows/${filename}.zip arpcalc -x "*.debug")
 echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}.zip\"></head></html>" > publish/windows/latest.html
 echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}.zip\"></head></html>" > publish/windows/index.html
-mv arpcalc $source_dir
+mv $staging/arpcalc $source_dir
+rmdir $staging
 
 echo "Zip file created as publish/windows/${filename}.zip"
 echo "To publish on web, run:"

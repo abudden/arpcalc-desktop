@@ -9,6 +9,12 @@ export PKG_CONFIG_LIBDIR=/usr/${TARGET}/sys-root/mingw/lib/pkgconfig
 
 # See dockerfiles/winqt/build_dockerwin.sh for the choice of plugins:
 # mxedeployqt works with Fedora's MinGW tree too.
+
+# Start from an empty output folder: make clean leaves the DLLs and plugins,
+# and mxedeployqt doesn't replace existing ones, so a new ARPCalc.exe could
+# be zipped with an older Qt.
+rm -rf output/dockerwinfedora
+
 ${TARGET}-qmake-qt6 -o Makefile.dockerwinfedora "CONFIG+=dockerwin" \
 		"BUILDNAME=dockerwinfedora" "PKG_CONFIG=${TARGET}-pkg-config" && \
 	make -f Makefile.dockerwinfedora clean && \
