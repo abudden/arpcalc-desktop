@@ -130,16 +130,36 @@ void StartupTiming::probe()
 	QFontDatabase::families();
 	mark("font database");
 
+	// Every non-ASCII character that the buttons and displays can show
+	const QString symbols = QString::fromUtf8(
+				"<>£°±·Å×÷łΑΒΓΔΕ"
+				"ΖΗΘΙΚΛΜΝΞΟΠΡΣΤ"
+				"ΥΦΧΨΩαβγδεζηθι"
+				"κλμνξοπρστυφχψ"
+				"ω –€←↑→↓⇔√∞");
+
+	// Which of them the main font doesn't have (and so need a fallback
+	// font).  The font used to check doesn't do any font fallback itself.
+	QFont mainFont(QApplication::font().families().value(0));
+	mainFont.setStyleStrategy(QFont::NoFontMerging);
+	QFontMetrics mainMetrics(mainFont);
+	QString missing;
+	for (QChar c : symbols) {
+		if ( ! mainMetrics.inFont(c)) {
+			missing += c;
+		}
+	}
+	mark("glyph check");
+	stages << QString("(missing from %1: %2)").arg(mainFont.family(),
+			missing.isEmpty() ? QString("none") : missing);
+
 	// Loading the font itself
 	QFontMetrics metrics(QApplication::font());
 	metrics.horizontalAdvance("0123456789 ENTER CLEAR");
 	mark("font metrics");
 
-	// The symbols on the buttons, which may need fallback fonts
-	metrics.horizontalAdvance(QString::fromUtf8(
-				"\u00d7\u2192\u2190\u221a\u03c0\u0394\u03bc\u00b1\u21d4\u00b7\u2191"
-				"\u03b6\u03be\u03c5\u03b8\u03c4\u03c3\u03c1\u03c8\u03c6\u03c9\u03bd"
-				"\u03bb\u03ba\u03b9\u2013"));
+	// The symbols, which may need fallback fonts
+	metrics.horizontalAdvance(symbols);
 	mark("symbol fonts");
 
 	// Rich text, as the buttons and displays use, at another size
