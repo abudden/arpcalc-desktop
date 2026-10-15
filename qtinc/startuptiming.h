@@ -41,6 +41,11 @@ class StartupTiming : public QObject
 		// Records a stage from elsewhere in the app (if enabled)
 		static void markStage(QString stage);
 
+		// If enabled, does each piece of Qt's first-time set-up that creating
+		// the window would otherwise do all at once (in setupUi), recording
+		// how long each one takes
+		void probe();
+
 	protected:
 		bool eventFilter(QObject *object, QEvent *event) override;
 

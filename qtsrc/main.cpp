@@ -97,6 +97,8 @@ int main(int argc, char *argv[])
 		"}"
 		);
 
+	timing.probe();
+
 	// This is our MainWidget class containing our GUI and functionality
 	CalcWindow w;
 	timing.mark("window created");
