@@ -70,25 +70,14 @@ int main(int argc, char *argv[])
 	timing.mark("QApplication");
 
 #ifdef Q_OS_WIN
-	// Explicit font list (Windows only: these families don't exist elsewhere,
-	// and on other platforms the desktop's own font should be left alone).
-	// Used to speed up start-up
+	// Segoe UI only (Windows only: on other platforms the desktop's own font
+	// should be left alone).  It has every character the app shows.  Don't
+	// give a list of families: for such a font Qt builds its list of
+	// fallback fonts as soon as it is loaded, which means reading every
+	// installed font (~0.5 s with ~1100 fonts).  With a single family it
+	// only does that if a character is missing from the font.
 	QFont f;
-	const QStringList args = QCoreApplication::arguments();
-	if (args.contains("--font-test=single") || args.contains("--font-test=nomerge")) {
-		// Temporary start-up time test.  With a list of families, Qt builds
-		// its list of fallback fonts as soon as it loads the font, which
-		// means reading every installed font.  With one family it only does
-		// that if a character is missing from it, and with font merging
-		// turned off it never does (but missing characters show as boxes).
-		f.setFamilies({"Segoe UI"});
-		if (args.contains("--font-test=nomerge")) {
-			f.setStyleStrategy(QFont::NoFontMerging);
-		}
-	}
-	else {
-		f.setFamilies({"Segoe UI", "Segoe UI Symbol", "Cambria Math"});
-	}
+	f.setFamily("Segoe UI");
 	a.setFont(f);
 	timing.mark("font");
 #endif
