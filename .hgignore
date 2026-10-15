@@ -6,7 +6,11 @@ debug
 generated_files
 .qmake.stash
 Makefile*
+staging.*
 src/changeset.cpp
+src/changeset.cpp.*
 publish
 output
+symbols
 .git*
+arpcalc_plugin_import.cpp
