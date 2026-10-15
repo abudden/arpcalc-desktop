@@ -134,7 +134,13 @@ keyHandlerResult CommandHandler::handleKey(std::string key, std::string modifier
 			if ((key.length() == 1) && (key[0] >= 'A') && (key[0] <= 'Z')) {
 				std::string command = key;
 				if (is_greek) {
-					command = roman_to_greek.at(command);
+					// Not every Roman letter has a Greek equivalent (e.g. F
+					// and J); at() would throw and crash the app.
+					auto greek = roman_to_greek.find(command);
+					if (greek == roman_to_greek.end()) {
+						return Key_NotHandled;
+					}
+					command = greek->second;
 				}
 
 				if (last_store_mode) {

@@ -18,8 +18,11 @@
 #include <QtWidgets>
 #include <QFont>
 #include <QTimer>
+#include "crashlog.h"
 #include "calcwindow.h"
 #include "startuptiming.h"
+
+extern const char * version;
 
 #ifdef Q_OS_WIN
 #include <thread>
@@ -59,6 +62,8 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_WIN
 	std::thread(prewarmDirect3D).detach();
 #endif
+
+	installCrashLogger(version);
 
 	// Creates an instance of QApplication
 	QApplication a(argc, argv);

@@ -153,3 +153,15 @@ qmake-qt6.exe && make clean && make 2>&1
 bash get_dlls.sh
 ```
 <!-- vim: set ft=pandoc : -->
+
+## Diagnosing Crashes
+
+If the Windows version crashes, it appends a report to `crash.log` next to `ARPCalc.exe` (or to `ARPCalc-crash.log` in `%TEMP%` if that folder isn't writable).  The report gives the exception and a backtrace as `module+offset` lines.
+
+The docker build keeps the debug information for each zip file in `symbols/<zip file name>.exe.debug`.  To turn an `ARPCalc.exe+0x...` line into a function and source line, add the image base (`0x140000000`) to the offset and run (in the Windows docker container, which has the MXE tools):
+
+    x86_64-w64-mingw32.shared-addr2line -f -C -e symbols/<zip file name>.exe.debug 0x140012345
+
+For every line except the first, subtract 1 from the address (it is a return address, so points just after the call).
+
+The calculator core can also be tested with random key presses under AddressSanitizer by running [tests/run_fuzz.sh](tests/run_fuzz.sh) (needs `g++`, `libmpfr-dev` and `libgmp-dev`).

@@ -44,6 +44,12 @@ else
 fi
 
 (cd $staging && zip -r ../publish/windows/${filename}.zip arpcalc -x "*.debug")
+# Keep the debug information for this build, for resolving crash.log addresses
+if [ -e $staging/arpcalc/ARPCalc.exe.debug ]
+then
+	mkdir -p symbols
+	cp $staging/arpcalc/ARPCalc.exe.debug symbols/${filename}.exe.debug
+fi
 echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}.zip\"></head></html>" > publish/windows/latest.html
 echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}.zip\"></head></html>" > publish/windows/index.html
 mv $staging/arpcalc $source_dir

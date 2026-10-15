@@ -692,13 +692,18 @@ ErrorCode Stack::convertHoursToHms()
 	seconds = minutes - minutes.floor();
 	seconds = seconds * AF("60.0");
 	minutes = minutes.floor();
-	while (seconds >= AF("60.0")) {
-		seconds = seconds - AF("60.0");
-		minutes = minutes + AF("1.0");
+	// Carry with a single division rather than by repeatedly subtracting
+	// 60: for a very large X, the rounding in reduce_precision() leaves a
+	// huge "fractional" part and a loop would never finish.
+	if (seconds >= AF("60.0")) {
+		AF carry = (seconds / AF("60.0")).floor();
+		seconds = seconds - (carry * AF("60.0"));
+		minutes = minutes + carry;
 	}
-	while (minutes >= AF("60.0")) {
-		minutes = minutes - AF("60.0");
-		hours = hours + AF(sign);
+	if (minutes >= AF("60.0")) {
+		AF carry = (minutes / AF("60.0")).floor();
+		minutes = minutes - (carry * AF("60.0"));
+		hours = hours + (AF(sign) * carry);
 	}
 	push(hours + (AF(sign)*((minutes + (seconds / AF("100.0")))/AF("100.0"))));
 	return NoError;
@@ -722,9 +727,11 @@ ErrorCode Stack::convertHoursToHm()
 		sign = -1;
 	}
 	minutes = parthours * 60.0;
-	while (minutes >= 60.0) {
-		minutes = minutes - 60.0;
-		hours = hours + AF(sign);
+	// See convertHoursToHms() for why this isn't a loop
+	if (minutes >= 60.0) {
+		AF carry = (minutes / 60.0).floor();
+		minutes = minutes - (carry * 60.0);
+		hours = hours + (AF(sign) * carry);
 	}
 	push(hours + (AF(sign)*(minutes / 100.0)));
 	return NoError;
