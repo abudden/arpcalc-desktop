@@ -288,7 +288,7 @@ std::vector< std::vector<BI> > CommandHandler::getGrid(std::string grid)
 			},
 			{
 				{"recall", "RCL", "Recall a previously stored value and push it onto the stack."},
-				{"swap", "x &hArr; y", "Swap the values in X and Y."},
+				{"swap", "x &harr; y", "Swap the values in X and Y."}, // Segoe UI has no &hArr;
 				{"4", "4"},
 				{"5", "5"},
 				{"6", "6"},
