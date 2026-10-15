@@ -76,6 +76,7 @@ int main(int argc, char *argv[])
 	QFont f;
 	f.setFamilies({"Segoe UI", "Segoe UI Symbol", "Cambria Math"});
 	a.setFont(f);
+	timing.mark("font");
 #endif
 
 	// Tooltips pick up the main window's dark background (its style sheet's

@@ -24,6 +24,7 @@
 #include "calcwindow.h"
 #include "choicewindow.h"
 #include "clickablelabel.h"
+#include "startuptiming.h"
 
 extern const char * changeset;
 extern const char * version;
@@ -38,6 +39,7 @@ CalcWindow::CalcWindow(QWidget *parent) :
 	QWidget(parent)
 {
 	ui.setupUi(this);
+	StartupTiming::markStage("setupUi");
 	setFocusPolicy(Qt::StrongFocus);
 
 	ui.stkButtonPads->setCurrentIndex(0);
@@ -83,16 +85,22 @@ CalcWindow::CalcWindow(QWidget *parent) :
 	createSettings();
 	restoreSettings();
 	restoreStack();
+	StartupTiming::markStage("settings");
 
 	setupWindowSize();
 
 	createOptPad();
+	StartupTiming::markStage("options pad");
 	tabSelect("optpad1");
+	StartupTiming::markStage("options shown");
 	adjustSize();
+	StartupTiming::markStage("adjustSize");
 	cancelPressed();
+	StartupTiming::markStage("numpad");
 
 	//setupGrid("numpad");
 	updateDisplays();
+	StartupTiming::markStage("displays");
 
 	/*
 	if (calc.getOption(ShowHelpOnStart)) {
