@@ -120,6 +120,57 @@ void StartupTiming::mark(QString stage)
 	}
 }
 
+void StartupTiming::probe()
+{
+	if ( ! enabled) {
+		return;
+	}
+
+	// Enumerating the installed fonts
+	QFontDatabase::families();
+	mark("font database");
+
+	// Loading the font itself
+	QFontMetrics metrics(QApplication::font());
+	metrics.horizontalAdvance("0123456789 ENTER CLEAR");
+	mark("font metrics");
+
+	// The symbols on the buttons, which may need fallback fonts
+	metrics.horizontalAdvance(QString::fromUtf8(
+				"\u00d7\u2192\u2190\u221a\u03c0\u0394\u03bc\u00b1\u21d4\u00b7\u2191"
+				"\u03b6\u03be\u03c5\u03b8\u03c4\u03c3\u03c1\u03c8\u03c6\u03c9\u03bd"
+				"\u03bb\u03ba\u03b9\u2013"));
+	mark("symbol fonts");
+
+	// Rich text, as the buttons and displays use, at another size
+	QTextDocument doc;
+	QFont big = QApplication::font();
+	big.setPointSize(16);
+	doc.setDefaultFont(big);
+	doc.setHtml("1.234&nbsp;567<sup><small>-3</small></sup> &times; &larr;");
+	doc.size();
+	mark("rich text");
+
+	// Style sheets like the window's
+	{
+		QWidget window;
+		window.setStyleSheet("background-color: rgb(57, 56, 58);");
+		QLabel *label = new QLabel("x", &window);
+		label->setStyleSheet("QLabel { color: rgb(255, 255, 255); "
+				"border: 1px solid #ffffff; border-radius: 5px; font-size: 10pt; }");
+		QPushButton *button = new QPushButton(&window);
+		label->ensurePolished();
+		button->ensurePolished();
+		label->sizeHint();
+		button->sizeHint();
+	}
+	mark("style sheets");
+
+	// The tab button icons
+	QIcon(":/res/numpad.png").pixmap(90, 90);
+	mark("icon");
+}
+
 void StartupTiming::logAfterFirstPaint(QWidget *window)
 {
 	if (enabled) {
