@@ -59,8 +59,9 @@ cd ..
 
 mkdir -p publish/linux
 
-# Versioning
+# Versioning ("dk": built with docker)
 
+build=dk
 changeset=$(hg id -i)
 if [[ ${changeset:0-1} == "+" ]]
 then
@@ -81,8 +82,8 @@ mv arpcalc output/AppDir
 
 # Update redirect pages
 
-echo "<html><head><meta http-equiv="refresh" content="0; URL=/linux/${filename}.AppImage"></head></html>" > publish/linux/latest.html
-echo "<html><head><meta http-equiv="refresh" content="0; URL=/linux/${filename}.AppImage"></head></html>" > publish/linux/index.html
+echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/linux/${filename}.AppImage\"></head></html>" > publish/linux/latest.html
+echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/linux/${filename}.AppImage\"></head></html>" > publish/linux/index.html
 
 echo "Build complete: ${filename}.AppImage"
 
