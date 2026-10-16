@@ -125,13 +125,27 @@ ErrorCode CommandHandler::SI(std::string name)
 	return NoError;
 }
 
+// The prefixes' names in order of size (the maps are in alphabetical order)
+static std::vector<std::string> namesBySize(const std::map<std::string, int> &prefixes)
+{
+	std::vector<std::pair<int, std::string> > bySize;
+	for (const auto& [name, power]: prefixes) {
+		bySize.push_back({power, name});
+	}
+	std::sort(bySize.begin(), bySize.end());
+	std::vector<std::string> result;
+	for (const auto& [power, name]: bySize) {
+		(void) power;
+		result.push_back(name);
+	}
+	return result;
+}
+
 std::vector<std::string> CommandHandler::getBinaryPrefixSymbols()
 {
 	std::vector<std::string> result;
-	for (const auto& [long_name, short_name]: SISymbols) {
-		if (SIBinaryPrefixes.contains(long_name)) {
-			result.push_back(short_name);
-		}
+	for (const auto& name: namesBySize(SIBinaryPrefixes)) {
+		result.push_back(SISymbols[name]);
 	}
 	return result;
 }
@@ -139,34 +153,18 @@ std::vector<std::string> CommandHandler::getBinaryPrefixSymbols()
 std::vector<std::string> CommandHandler::getDecimalPrefixSymbols()
 {
 	std::vector<std::string> result;
-	for (const auto& [long_name, short_name]: SISymbols) {
-		if (SIDecimalPrefixes.contains(long_name)) {
-			result.push_back(short_name);
-		}
+	for (const auto& name: namesBySize(SIDecimalPrefixes)) {
+		result.push_back(SISymbols[name]);
 	}
 	return result;
 }
 
 std::vector<std::string> CommandHandler::getBinaryPrefixNames()
 {
-	std::vector<std::string> result;
-	for (const auto& [long_name, short_name]: SISymbols) {
-		(void) short_name;
-		if (SIBinaryPrefixes.contains(long_name)) {
-			result.push_back(long_name);
-		}
-	}
-	return result;
+	return namesBySize(SIBinaryPrefixes);
 }
 
 std::vector<std::string> CommandHandler::getDecimalPrefixNames()
 {
-	std::vector<std::string> result;
-	for (const auto& [long_name, short_name]: SISymbols) {
-		(void) short_name;
-		if (SIDecimalPrefixes.contains(long_name)) {
-			result.push_back(long_name);
-		}
-	}
-	return result;
+	return namesBySize(SIDecimalPrefixes);
 }

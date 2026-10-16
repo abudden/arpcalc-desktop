@@ -638,13 +638,14 @@ ErrorCode Stack::convertHmsToHours()
 		minutes = hours - x;
 		sign = -1;
 	}
-	minutes = minutes * 100;
-	minutes.reduce_precision();
+	// D.MMSS... is decimal digits, but in binary 0.15 * 100 can come out as
+	// 14.999..., so round to well beyond any digits that were typed in
+	// before taking the floor
+	minutes = (minutes * 100).roundToPlaces(20);
 	seconds = minutes - minutes.floor();
 
 	minutes = minutes.floor();
-	seconds = seconds * 100;
-	seconds.reduce_precision();
+	seconds = (seconds * 100).roundToPlaces(18);
 	push(hours + (AF(sign)*((minutes+(seconds/60.0))/60.0)));
 	return NoError;
 }

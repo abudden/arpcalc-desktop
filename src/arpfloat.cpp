@@ -255,6 +255,12 @@ void AF::reduce_precision()
 	mpfr_prec_round(vptr, precision, rounding_mode);
 }
 
+AF AF::roundToPlaces(int places)
+{
+	AF scale = AF(10).pow(AF(places));
+	return (*this * scale).round() / scale;
+}
+
 AF AF::floor()
 {
 	AF r;
