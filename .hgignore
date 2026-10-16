@@ -14,3 +14,4 @@ output
 symbols
 .git*
 arpcalc_plugin_import.cpp
+__pycache__
