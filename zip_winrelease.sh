@@ -36,6 +36,14 @@ then
 	mkdir -p publish/windows
 fi
 
+if [ "$variant" == "static-" ]
+then
+    printf '%s\r\n' \
+        "If updating from the shared build (with lots of DLLs) to the (single file) static build," \
+        "Delete all the old files (except settings.ini) as they're no longer required." \
+        > "${staging}/arpcalc/README.txt"
+fi
+
 changeset=$(hg id -i)
 if [[ ${changeset:0-1} == "+" ]]
 then
