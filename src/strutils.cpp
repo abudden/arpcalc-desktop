@@ -92,3 +92,40 @@ std::string convertWithBase(intmax_t value, int base)
 	std::reverse( buf.begin(), buf.end() );
 	return buf;
 }
+
+bool isNewerVersion(const int *current, std::string const &latest)
+{
+	const int compared = 3;
+	std::vector<std::string> parts = split(latest, ',');
+	if (parts.size() < compared) {
+		return false;
+	}
+
+	bool allZero = true;
+	for (int i=0;i<compared;i++) {
+		if (current[i] != 0) {
+			allZero = false;
+		}
+	}
+	if (allZero) {
+		return false;
+	}
+
+	// Compared in order, so the first part that differs decides: 1.4.0 is
+	// newer than 1.3.4 even though its last part is smaller
+	for (int i=0;i<compared;i++) {
+		std::string part = parts[i];
+		// Trim whitespace (the file ends with a newline)
+		part.erase(0, part.find_first_not_of(" \t\r\n"));
+		part.erase(part.find_last_not_of(" \t\r\n") + 1);
+		if (part.empty() || (part.find_first_not_of("0123456789") != std::string::npos)
+				|| (part.size() > 6)) {
+			return false;
+		}
+		int latestPart = std::stoi(part);
+		if (latestPart != current[i]) {
+			return (latestPart > current[i]);
+		}
+	}
+	return false;
+}
