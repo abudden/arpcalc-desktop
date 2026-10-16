@@ -1,30 +1,31 @@
 #!/bin/bash
 
-if [ $# -eq 0 ]
+# Zip files are named arpcalc-windows-<variant>-<version>-<date>-<build>,
+# where <build> is "nb" for builds done directly on Windows and "dk" for
+# those done with docker.  latest.html points at the native build or, for
+# docker, the static build.
+if [ $# -eq 0 ] || [ "$1" == "native" ]
 then
 	source_dir=output/winrelease
+	variant=
 	build=nb
-elif [ "$1" == "native" ]
-then
-	source_dir=output/winrelease
-	build=nb
+	update_latest=yes
 elif [ "$1" == "docker" ]
 then
 	source_dir=output/dockerwin
+	variant=shared-
 	build=dk
+	update_latest=no
 elif [ "$1" == "dockerstatic" ]
 then
 	source_dir=output/dockerwinstatic
-	build=dks
-elif [ "$1" == "dockerfedora" ]
-then
-	source_dir=output/dockerwinfedora
-	build=dkf
+	variant=static-
+	build=dk
+	update_latest=yes
 else
 	echo "Unrecognised build type"
 	exit 1
 fi
-
 
 # Stage in a folder of its own so that builds running at the same time
 # don't zip each other's files
@@ -38,9 +39,9 @@ fi
 changeset=$(hg id -i)
 if [[ ${changeset:0-1} == "+" ]]
 then
-	filename=arpcalc-windows-$(date +%Y%m%d)-${changeset}-${build}
+	filename=arpcalc-windows-${variant}$(date +%Y%m%d)-${changeset}-${build}
 else
-	filename=arpcalc-windows-$(hg log -r . --template "{latesttag}-{latesttagdistance}-{node|short}")-$(date +%Y%m%d)-${build}
+	filename=arpcalc-windows-${variant}$(hg log -r . --template "{latesttag}-{latesttagdistance}-{node|short}")-$(date +%Y%m%d)-${build}
 fi
 
 (cd $staging && zip -r ../publish/windows/${filename}.zip arpcalc -x "*.debug")
@@ -50,8 +51,11 @@ then
 	mkdir -p symbols
 	cp $staging/arpcalc/ARPCalc.exe.debug symbols/${filename}.exe.debug
 fi
-echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}.zip\"></head></html>" > publish/windows/latest.html
-echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}.zip\"></head></html>" > publish/windows/index.html
+if [ $update_latest == yes ]
+then
+	echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}.zip\"></head></html>" > publish/windows/latest.html
+	echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}.zip\"></head></html>" > publish/windows/index.html
+fi
 mv $staging/arpcalc $source_dir
 rmdir $staging
 

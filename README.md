@@ -88,11 +88,12 @@ The release builds are compiled with docker-compose.  A brief explanation of the
 * [get_dlls.sh](get_dlls.sh): this tries to find all the DLLs used in the build in order to make a self-contained release.
 * [zip_winrelease.sh](zip_winrelease.sh): this zips up the release ready for publication.
 
-To build the docker containers on a Linux system, run `docker-compose build`.  This will take quite a long time as it compiles MXE from scratch (as the MXE repositories don't, at the time of writing, include very recent versions of GCC, upon which this code relies).
+To build the docker containers on a Linux system, run `docker-compose build`.  This will take quite a long time (a few hours) as it compiles MXE from scratch (MXE's pre-built packages don't include Qt 6).
 
-There is also a Windows build that uses Fedora's pre-built MinGW compiler and Qt packages instead of MXE: its image builds in minutes rather than hours.  It only runs when asked for: `docker compose up cpparpcalc_windows_fedora`.  The zip file name ends in `-dkf`.
+The Windows container builds two versions of ARPCalc, both zipped into `publish/windows`:
 
-There is also an experimental statically-linked Windows build (a single `ARPCalc.exe` with no DLLs, which should start faster).  It uses the static MXE target that the Windows container already builds and only runs when asked for: `docker compose up cpparpcalc_windows_static`.  The zip file name ends in `-dks`.
+* `arpcalc-windows-static-<version>-<date>-dk.zip`: a single, statically-linked `ARPCalc.exe` with no DLLs, which starts faster.  `latest.html` points at this one.
+* `arpcalc-windows-shared-<version>-<date>-dk.zip`: `ARPCalc.exe` with the Qt DLLs and plugins it uses.
 
 ## Start-up Time
 
