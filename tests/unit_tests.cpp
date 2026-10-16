@@ -27,7 +27,7 @@
  *
  * defaultConversionTests (like the Kotlin original) exports the list of
  * units and runs tests/generate_conversion_tests.py, which uses python-pint
- * 0.9 to generate the expected results.  If pint can't be imported, that
+ * to generate the expected results.  If pint can't be imported, that
  * test is skipped.  Set PYTHON to choose the python interpreter (default
  * python3).
  *
@@ -432,7 +432,7 @@ static void defaultConversionTests()
 	std::string python = pythonCommand();
 	if (std::system((python + " -c 'import pint' > /dev/null 2>&1").c_str()) != 0) {
 		std::cerr << "SKIPPED " << currentTest << ": python-pint is not available to "
-			<< python << " (set PYTHON to a python with pint 0.9 installed)" << std::endl;
+			<< python << " (set PYTHON to a python with pint installed)" << std::endl;
 		skippedCount++;
 		std::filesystem::remove(unitListFileName);
 		return;

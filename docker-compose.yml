@@ -1,4 +1,11 @@
 services:
+    # Runs the tests (see "Tests" in README.md).  First, so that dkr_seq.sh
+    # stops before building anything if they fail.
+    cpparpcalc_tests:
+        build: dockerfiles/tests
+        volumes:
+            - .:/src
+        user: 1000:1000
     cpparpcalc_jsbuild:
         build: dockerfiles/js
         volumes:

@@ -4,7 +4,7 @@
 # + UBSan and run them.  Needs g++, libmpfr-dev and libgmp-dev.
 #
 # The conversion test that checks results against python-pint is skipped
-# unless pint 0.9 can be imported: set PYTHON to a python that has it, e.g.
+# unless pint can be imported: set PYTHON to a python that has it, e.g.
 # PYTHON=~/venv/bin/python tests/run_tests.sh
 #
 # Usage: tests/run_tests.sh [test name...]  (no names: run every test)

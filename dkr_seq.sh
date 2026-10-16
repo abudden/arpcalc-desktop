@@ -4,5 +4,6 @@
 services=$(grep '^\s*cpparpcalc' docker-compose.yml | sed 's/^\s*\(cpparpcalc.*\):/\1/')
 for service in $services
 do
-	docker compose up $service || exit 3
+	# Without --exit-code-from, "up" succeeds even if the container fails
+	docker compose up --exit-code-from $service $service || exit 3
 done
