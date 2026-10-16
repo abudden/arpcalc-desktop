@@ -275,7 +275,10 @@ class Stack
 		BitCount bitCount = bc32;
 		const uintmax_t MAX_HIST = 50;
 
-		std::mt19937 rng;  // the Mersenne Twister with a popular choice of parameters
+		// The 64-bit Mersenne Twister: not std::mt19937, which Qt also uses.  In a
+		// static build only one copy of its out-of-line code is linked, and Qt's
+		// callers (compiled with GCC's -fipa-ra) crashed when it was this one.
+		std::mt19937_64 rng;
 };
 
 #endif

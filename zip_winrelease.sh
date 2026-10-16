@@ -1,24 +1,36 @@
 #!/bin/bash
 
-if [ $# -eq 0 ]
+# Zip files are named arpcalc-windows-<variant>-<version>-<date>-<build>,
+# where <build> is "nb" for builds done directly on Windows and "dk" for
+# those done with docker.  latest.html points at the native build or, for
+# docker, the static build.
+if [ $# -eq 0 ] || [ "$1" == "native" ]
 then
 	source_dir=output/winrelease
+	variant=
 	build=nb
-elif [ "$1" == "native" ]
-then
-	source_dir=output/winrelease
-	build=nb
+	update_latest=yes
 elif [ "$1" == "docker" ]
 then
 	source_dir=output/dockerwin
+	variant=shared-
 	build=dk
+	update_latest=no
+elif [ "$1" == "dockerstatic" ]
+then
+	source_dir=output/dockerwinstatic
+	variant=static-
+	build=dk
+	update_latest=yes
 else
 	echo "Unrecognised build type"
 	exit 1
 fi
 
-
-mv $source_dir arpcalc
+# Stage in a folder of its own so that builds running at the same time
+# don't zip each other's files
+staging=$(mktemp -d staging.XXXXXX)
+mv $source_dir $staging/arpcalc
 if [ ! -e publish/windows ]
 then
 	mkdir -p publish/windows
@@ -27,15 +39,25 @@ fi
 changeset=$(hg id -i)
 if [[ ${changeset:0-1} == "+" ]]
 then
-	filename=arpcalc-windows-$(date +%Y%m%d)-${changeset}-${build}
+	filename=arpcalc-windows-${variant}$(date +%Y%m%d)-${changeset}-${build}
 else
-	filename=arpcalc-windows-$(hg log -r . --template "{latesttag}-{latesttagdistance}-{node|short}")-$(date +%Y%m%d)-${build}
+	filename=arpcalc-windows-${variant}$(hg log -r . --template "{latesttag}-{latesttagdistance}-{node|short}")-$(date +%Y%m%d)-${build}
 fi
 
-zip -r publish/windows/${filename}.zip arpcalc
-echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}.zip\"></head></html>" > publish/windows/latest.html
-echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}.zip\"></head></html>" > publish/windows/index.html
-mv arpcalc $source_dir
+(cd $staging && zip -r ../publish/windows/${filename}.zip arpcalc -x "*.debug")
+# Keep the debug information for this build, for resolving crash.log addresses
+if [ -e $staging/arpcalc/ARPCalc.exe.debug ]
+then
+	mkdir -p symbols
+	cp $staging/arpcalc/ARPCalc.exe.debug symbols/${filename}.exe.debug
+fi
+if [ $update_latest == yes ]
+then
+	echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}.zip\"></head></html>" > publish/windows/latest.html
+	echo "<html><head><meta http-equiv=\"refresh\" content=\"0; URL=/windows/${filename}.zip\"></head></html>" > publish/windows/index.html
+fi
+mv $staging/arpcalc $source_dir
+rmdir $staging
 
 echo "Zip file created as publish/windows/${filename}.zip"
 echo "To publish on web, run:"

@@ -4,6 +4,7 @@ services:
         volumes:
             - .:/src
         user: 1000:1000
+    # Builds both the statically-linked and the shared (DLLs) Windows versions
     cpparpcalc_windows:
         build: dockerfiles/winqt
         volumes:

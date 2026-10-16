@@ -18,6 +18,7 @@
 #ifndef STRUTILS_H
 #define STRUTILS_H
 
+#include <cstdint>
 #include <string>
 #include <vector>
 

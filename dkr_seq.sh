@@ -4,5 +4,5 @@
 services=$(grep '^\s*cpparpcalc' docker-compose.yml | sed 's/^\s*\(cpparpcalc.*\):/\1/')
 for service in $services
 do
-	docker-compose up $service || exit 3
+	docker compose up $service || exit 3
 done

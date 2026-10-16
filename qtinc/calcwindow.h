@@ -27,8 +27,25 @@
 
 class ClickableLabel;
 class QSettings;
-class QNetworkReply;
+class QNetworkAccessManager;
+class QThread;
 class ChoiceWindow;
+
+// Downloads files.  Lives in a worker thread: see
+// CalcWindow::startNetworkOperations() for why.
+class Downloader : public QObject
+{
+	Q_OBJECT
+
+	public slots:
+		void get(QString url);
+
+	signals:
+		void downloaded(QString url, QByteArray data);
+
+	private:
+		QNetworkAccessManager *manager = NULL;
+};
 
 class CalcWindow : public QWidget
 {
@@ -57,8 +74,7 @@ class CalcWindow : public QWidget
 		void toOptPad1();
 		void toOptPad2();
 		void clearToast();
-		void gotCurrencyData(QNetworkReply *reply);
-		void gotLatestVersion(QNetworkReply *reply);
+		void downloaded(QString url, QByteArray data);
 		void copyVersionInfo();
 		void copyAsValue();
 		void copyFormatted();
@@ -104,9 +120,10 @@ class CalcWindow : public QWidget
 
 		void cancelPressed();
 		void showToast(QString message, bool isHelp=false);
-		void getCurrencyData();
-		void getLatestVersion();
+		void gotCurrencyData(QByteArray data);
+		void gotLatestVersion(QByteArray data);
 		QString unzipByteArray(QByteArray data);
+		QThread *networkThread = NULL;
 
 		QList<QList<ClickableLabel *> > buttonArray;
 		QList<QHBoxLayout *>  layoutArray;

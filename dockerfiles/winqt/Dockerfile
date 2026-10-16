@@ -42,6 +42,7 @@ RUN apt-get update && apt-get install -y \
 		python-is-python3 \
 		python3 \
 		python3-mako \
+		python3-yaml \
 		ruby \
 		sed \
 		unzip \
@@ -54,7 +55,9 @@ RUN git clone https://github.com/mxe/mxe.git
 
 WORKDIR /opt/mxe
 
-RUN make MXE_TARGETS="x86_64-w64-mingw32.shared x86_64-w64-mingw32.static" cc gmp mpfr libzip qt6
+# Only qtbase is needed (QtCore, QtGui, QtWidgets and QtNetwork): "qt6" would
+# build every Qt module.  The static target is for build_dockerwin_static.sh.
+RUN make MXE_TARGETS="x86_64-w64-mingw32.shared x86_64-w64-mingw32.static" cc gmp mpfr libzip qt6-qtbase
 
 # This simpler version should (hopefully) work as soon as
 # MXE bother to update the repositories (reference:

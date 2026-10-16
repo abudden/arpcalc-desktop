@@ -24,17 +24,22 @@
 #include "calcwindow.h"
 #include "choicewindow.h"
 #include "clickablelabel.h"
+#include "startuptiming.h"
 
 extern const char * changeset;
 extern const char * version;
 extern const char * builddate;
 extern const int version_nums[];
 
+static const QString currencyDataUrl = "https://www.ecb.int/stats/eurofxref/eurofxref.zip";
+static const QString latestVersionUrl = "https://rpn.cgtk.co.uk/latest-desktop.txt";
+
 // Constructor for main widget
 CalcWindow::CalcWindow(QWidget *parent) :
 	QWidget(parent)
 {
 	ui.setupUi(this);
+	StartupTiming::markStage("setupUi");
 	setFocusPolicy(Qt::StrongFocus);
 
 	ui.stkButtonPads->setCurrentIndex(0);
@@ -80,16 +85,22 @@ CalcWindow::CalcWindow(QWidget *parent) :
 	createSettings();
 	restoreSettings();
 	restoreStack();
+	StartupTiming::markStage("settings");
 
 	setupWindowSize();
 
 	createOptPad();
+	StartupTiming::markStage("options pad");
 	tabSelect("optpad1");
+	StartupTiming::markStage("options shown");
 	adjustSize();
+	StartupTiming::markStage("adjustSize");
 	cancelPressed();
+	StartupTiming::markStage("numpad");
 
 	//setupGrid("numpad");
 	updateDisplays();
+	StartupTiming::markStage("displays");
 
 	/*
 	if (calc.getOption(ShowHelpOnStart)) {
@@ -108,13 +119,62 @@ CalcWindow::~CalcWindow()
 	saveSettings();
 	saveStack();
 	delete settings;
+
+	if (networkThread != NULL) {
+		networkThread->quit();
+		// Don't hold up closing if a request is stuck (e.g. looking up a
+		// proxy): the thread is abandoned and ends with the process.
+		if (networkThread->wait(1000)) {
+			delete networkThread;
+		}
+	}
 }
 
 void CalcWindow::startNetworkOperations()
 {
-	getCurrencyData();
+	// The requests are made from a worker thread because
+	// QNetworkAccessManager does slow things in the thread that makes the
+	// request: it loads the TLS back end and asks Windows for the system
+	// proxy, which with "Automatically detect settings" enabled (the
+	// default) can block for seconds on some networks.  In the GUI thread
+	// that held up the window being drawn.
+	networkThread = new QThread;
+	Downloader *downloader = new Downloader;
+	downloader->moveToThread(networkThread);
+	connect(networkThread, &QThread::finished, downloader, &QObject::deleteLater);
+	connect(downloader, &Downloader::downloaded, this, &CalcWindow::downloaded);
+	networkThread->start();
+
+	QMetaObject::invokeMethod(downloader, "get", Q_ARG(QString, currencyDataUrl));
 	if (calc.getOption(CheckForNewVersions)) {
-		getLatestVersion();
+		QMetaObject::invokeMethod(downloader, "get", Q_ARG(QString, latestVersionUrl));
+	}
+}
+
+void Downloader::get(QString url)
+{
+	if (manager == NULL) {
+		manager = new QNetworkAccessManager(this);
+	}
+	QNetworkReply *reply = manager->get(QNetworkRequest(QUrl(url)));
+	connect(reply, &QNetworkReply::finished, this, [this, reply, url] {
+		if (reply->error() == QNetworkReply::NoError) {
+			emit downloaded(url, reply->readAll());
+		}
+		else {
+			qDebug() << "Couldn't download" << url;
+		}
+		reply->deleteLater();
+	});
+}
+
+void CalcWindow::downloaded(QString url, QByteArray data)
+{
+	if (url == currencyDataUrl) {
+		gotCurrencyData(data);
+	}
+	else if (url == latestVersionUrl) {
+		gotLatestVersion(data);
 	}
 }
 
@@ -246,22 +306,9 @@ void CalcWindow::pasteValue()
 	updateDisplays();
 }
 
-void CalcWindow::getLatestVersion()
-{
-	QString url = "https://rpn.cgtk.co.uk/latest-desktop.txt";
-	QNetworkAccessManager *manager = new QNetworkAccessManager;
-	manager->get(QNetworkRequest(QUrl(url)));
-	connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gotLatestVersion(QNetworkReply*)));
-}
-
-void CalcWindow::gotLatestVersion(QNetworkReply *reply)
+void CalcWindow::gotLatestVersion(QByteArray data)
 {
 	bool newer_available = false;
-	if (reply->error() != QNetworkReply::NoError) {
-		qDebug() << "Couldn't download URL";
-		return;
-	}
-	QByteArray data = reply->readAll();
 	qDebug() << "Got data; data length = " << data.size();
 	QString versionString = QString(data);
 
@@ -293,72 +340,61 @@ void CalcWindow::gotLatestVersion(QNetworkReply *reply)
 	}
 }
 
-void CalcWindow::getCurrencyData()
-{
-	QString url = "https://www.ecb.int/stats/eurofxref/eurofxref.zip";
-	QNetworkAccessManager *manager = new QNetworkAccessManager;
-	manager->get(QNetworkRequest(QUrl(url)));
-	connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(gotCurrencyData(QNetworkReply*)));
-}
-
 QString CalcWindow::unzipByteArray(QByteArray data)
 {
 	const char *buffer = data.constData();
 
 	zip_error_t err;
+	zip_error_init(&err);
 
 	zip_source_t *zsource = zip_source_buffer_create(buffer, data.size(),
 			0, &err);
 	if (zsource == NULL) {
 		qDebug() << "zip source not initialised";
+		zip_error_fini(&err);
 		return "";
 	}
 
 	zip *z = zip_open_from_source(zsource, ZIP_RDONLY, &err);
+	zip_error_fini(&err);
 	if (z == NULL) {
 		qDebug() << "zip not opened";
+		zip_source_free(zsource);
 		return "";
 	}
 
 	struct zip_stat st;
 	zip_stat_init(&st);
 	int e =zip_stat_index(z, 0, 0, &st);
-	if (e != 0) {
+	if ((e != 0) || ((st.valid & ZIP_STAT_SIZE) == 0)) {
 		qDebug() << "No files found in zip";
+		zip_discard(z);
 		return "";
 	}
-
-	char *contents = new char[st.size];
 
 	zip_file *f = zip_fopen_index(z, 0, 0);
 	if (f == NULL) {
 		qDebug() << "Couldn't open first file in archive";
+		zip_discard(z);
 		return "";
 	}
-	int bytes_read = zip_fread(f, contents, st.size);
+	// The file isn't NUL-terminated, so keep track of the length
+	// explicitly rather than treating the buffer as a C string.
+	QByteArray contents(st.size, Qt::Uninitialized);
+	zip_int64_t bytes_read = zip_fread(f, contents.data(), st.size);
+	zip_fclose(f);
+	zip_discard(z);
 	if (bytes_read <= 0) {
 		qDebug() << "Reading uncompressed data failed";
 		return "";
 	}
-	e = zip_fclose(f);
-	if (e != 0) {
-		qDebug() << "Couldn't close file";
-		return "";
-	}
+	contents.truncate(bytes_read);
 
-	zip_discard(z);
-	QString result(contents);
-	std::destroy_at(contents);
-	return result;
+	return QString::fromUtf8(contents);
 }
 
-void CalcWindow::gotCurrencyData(QNetworkReply *reply)
+void CalcWindow::gotCurrencyData(QByteArray data)
 {
-	if (reply->error() != QNetworkReply::NoError) {
-		qDebug() << "Couldn't download URL";
-		return;
-	}
-	QByteArray data = reply->readAll();
 	qDebug() << "Got data; data length = " << data.size();
 
 	QString unzipped = unzipByteArray(data);
@@ -377,6 +413,11 @@ void CalcWindow::gotCurrencyData(QNetworkReply *reply)
 			continue;
 		}
 		rows.append(line.split(","));
+	}
+
+	if ((rows.size() < 2) || (rows[1].size() < rows[0].size())) {
+		qDebug() << "Unexpected currency data format";
+		return;
 	}
 
 	std::map<std::string, double> wrtEuro;
@@ -571,6 +612,16 @@ void CalcWindow::setupWindowSize()
 	ui.btnOptPad->setIconSize(QSize(iconSize, iconSize));
 }
 
+// QWidget::setStyleSheet() re-polishes the widget even if the style sheet
+// hasn't changed, which is slow, and applyStyles() and setupGrid() run on
+// every key press.
+static void setStyleSheetIfChanged(QWidget *widget, const QString &styleSheet)
+{
+	if (widget->styleSheet() != styleSheet) {
+		widget->setStyleSheet(styleSheet);
+	}
+}
+
 void CalcWindow::applyStyles()
 {
 	static QString button_style = ""
@@ -621,29 +672,29 @@ void CalcWindow::applyStyles()
 		for (int c=0;c<6;c++) {
 			ClickableLabel *btn = buttonArray[r][c];
 			btn->setTextFormat(Qt::RichText);
-			btn->setStyleSheet(button_style);
+			setStyleSheetIfChanged(btn, button_style);
 			btn->setAlignment(Qt::AlignCenter);
 		}
 	}
 
 	ui.lblEntry->setTextFormat(Qt::RichText);
-	ui.lblEntry->setStyleSheet(entry_style);
+	setStyleSheetIfChanged(ui.lblEntry, entry_style);
 
 	ui.lblStack->setTextFormat(Qt::RichText);
-	ui.lblStack->setStyleSheet(stackbase_style);
+	setStyleSheetIfChanged(ui.lblStack, stackbase_style);
 
 	ui.lblEntry->setTextFormat(Qt::RichText);
-	ui.lblBase->setStyleSheet(stackbase_style);
+	setStyleSheetIfChanged(ui.lblBase, stackbase_style);
 
-	ui.lblStatusExponent->setStyleSheet(status_style);
-	ui.lblStatusAngular->setStyleSheet(status_style);
-	ui.lblStatusBase->setStyleSheet(status_style);
+	setStyleSheetIfChanged(ui.lblStatusExponent, status_style);
+	setStyleSheetIfChanged(ui.lblStatusAngular, status_style);
+	setStyleSheetIfChanged(ui.lblStatusBase, status_style);
 
-	ui.btnNumPad->setStyleSheet(tab_button_style);
-	ui.btnFuncPad->setStyleSheet(tab_button_style);
-	ui.btnConvPad->setStyleSheet(tab_button_style);
-	ui.btnConstPad->setStyleSheet(tab_button_style);
-	ui.btnOptPad->setStyleSheet(tab_button_style);
+	setStyleSheetIfChanged(ui.btnNumPad, tab_button_style);
+	setStyleSheetIfChanged(ui.btnFuncPad, tab_button_style);
+	setStyleSheetIfChanged(ui.btnConvPad, tab_button_style);
+	setStyleSheetIfChanged(ui.btnConstPad, tab_button_style);
+	setStyleSheetIfChanged(ui.btnOptPad, tab_button_style);
 
 	const QMargins margins(0, 0, 0, 0);
 	ui.lytTabButtons->setContentsMargins(margins);
@@ -1325,7 +1376,7 @@ void CalcWindow::setupGrid(QString gridname)
 			btn->setText(QString::fromStdString(cell.display));
 			btn->setProperty("name", QString::fromStdString(cell.name));
 			if (cell.hidden == true) {
-				btn->setStyleSheet(hidden_button_style);
+				setStyleSheetIfChanged(btn, hidden_button_style);
 			}
 			btn->setVisible(true);
 			QString helpText = QString::fromStdString(cell.helpText);
@@ -1407,6 +1458,7 @@ void CalcWindow::optionClicked(QString name)
 	optList[name].clickAction(&calc);
 	updateOptionIcons();
 	updateDisplays();
+	saveSettings();
 }
 
 void CalcWindow::optionHelp(QString name)
@@ -1441,7 +1493,6 @@ void CalcWindow::updateOptionIcons()
 			optIcons[name]->setIcon(QIcon(newicon));
 		}
 	}
-	saveSettings();
 }
 
 void CalcWindow::createOptPad()

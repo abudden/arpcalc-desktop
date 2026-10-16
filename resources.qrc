@@ -1,5 +1,6 @@
 <RCC>
 	<qresource prefix="/">
+		<file>fonts/ARPCalcSans-Regular.ttf</file>
 		<file>res/binary.png</file>
 		<file>res/blank.png</file>
 		<file>res/checked.png</file>

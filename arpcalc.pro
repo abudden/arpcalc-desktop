@@ -13,20 +13,33 @@ win32 {
 }
 
 CONFIG(dockerwin) {
-	LIBS += -lgmp -lmpfr
+	# mpfr before gmp so that static linking works
+	LIBS += -lmpfr -lgmp
 
 	PYTHON = python3
 	CONFIG += c++20
 
+	# Static builds (build_dockerwin_static.sh) have their own output folder
+	BUILDNAME = dockerwin
+	qtConfig(static): BUILDNAME = dockerwinstatic
+
 	# TODO: tidy up the output files
-	OBJECTS_DIR = generated_files/dockerwin
-	MOC_DIR = generated_files/dockerwin
-	RCC_DIR = generated_files/dockerwin
-	UI_DIR = generated_files/dockerwin
-	DESTDIR = output/dockerwin
+	OBJECTS_DIR = generated_files/$$BUILDNAME
+	MOC_DIR = generated_files/$$BUILDNAME
+	RCC_DIR = generated_files/$$BUILDNAME
+	UI_DIR = generated_files/$$BUILDNAME
+	DESTDIR = output/$$BUILDNAME
+
+	# Recorded in startup-timing.log
+	DEFINES += ARPCALC_BUILD_NAME=\\\"$$BUILDNAME\\\"
 
 	CONFIG += link_pkgconfig
 	PKGCONFIG += libzip
+
+	# Build with debug information but move it into ARPCalc.exe.debug (which
+	# isn't included in the zip file), so that the addresses in crash.log
+	# can be turned into source lines with addr2line.
+	CONFIG += force_debug_info separate_debug_info
 }
 else {
 	win32 {
@@ -102,7 +115,8 @@ HEADERS += \
 	inc/strutils.h \
 	qtinc/calcwindow.h \
 	qtinc/choicewindow.h \
-	qtinc/clickablelabel.h
+	qtinc/clickablelabel.h \
+	qtinc/startuptiming.h
 SOURCES += \
 	src/arpfloat.cpp \
 	src/changeset.cpp \
@@ -117,6 +131,11 @@ SOURCES += \
 	qtsrc/main.cpp \
 	qtsrc/calcwindow.cpp \
 	qtsrc/choicewindow.cpp \
-	qtsrc/clickablelabel.cpp
+	qtsrc/clickablelabel.cpp \
+	qtsrc/startuptiming.cpp
 FORMS += ui/qcalcwindow.ui
 RESOURCES = resources.qrc
+
+# Writes crash.log if the app crashes (Windows only)
+HEADERS += qtinc/crashlog.h
+SOURCES += qtsrc/crashlog.cpp

@@ -18,7 +18,11 @@
 #include <QtWidgets>
 #include <QFont>
 #include <QTimer>
+#include "crashlog.h"
 #include "calcwindow.h"
+#include "startuptiming.h"
+
+extern const char * version;
 
 #ifdef Q_OS_WIN
 #include <thread>
@@ -53,25 +57,65 @@ static void prewarmDirect3D()
 
 int main(int argc, char *argv[])
 {
+	StartupTiming timing(argc, argv);
+
 #ifdef Q_OS_WIN
 	std::thread(prewarmDirect3D).detach();
 #endif
 
+	installCrashLogger(version);
+
 	// Creates an instance of QApplication
 	QApplication a(argc, argv);
+	timing.mark("QApplication");
 
-#ifdef Q_OS_WIN
-	// Explicit font list (Windows only: these families don't exist elsewhere,
-	// and on other platforms the desktop's own font should be left alone).
-	// Used to speed up start-up
+	// ARPCalc Sans (Noto Sans plus the arrows and maths symbols from Noto Sans
+	// Math: see tools/make_font.py) is built in, so the app looks the same
+	// everywhere.  It has every character the app shows, so Qt never needs
+	// to look for a fallback font, which on Windows means reading every
+	// installed font (~0.5 s with ~1100 fonts).  For the same reason, give a
+	// single family rather than a list: for a list, Qt builds its list of
+	// fallback fonts as soon as the font is loaded.
 	QFont f;
-	f.setFamilies({"Segoe UI", "Segoe UI Symbol", "Cambria Math"});
-	a.setFont(f);
+	if (QFontDatabase::addApplicationFont(":/fonts/ARPCalcSans-Regular.ttf") >= 0) {
+		f.setFamily("ARPCalc Sans");
+		a.setFont(f);
+	}
+#ifdef Q_OS_WIN
+	else {
+		// Has everything except the swap button's double arrow
+		f.setFamily("Segoe UI");
+		a.setFont(f);
+	}
 #endif
+	timing.mark("font");
+
+	// Tooltips pick up the main window's dark background (its style sheet's
+	// background-color has no selector, so applies to them too) but not a
+	// text colour, so with recent Qt versions they were black on dark grey.
+	// Set the colours explicitly: the style sheet for styles that honour it
+	// and the palette for any that don't.  Done before any widgets exist so
+	// that nothing needs to be re-polished.
+	QPalette tipPalette = QToolTip::palette();
+	tipPalette.setColor(QPalette::ToolTipText, QColor(255, 255, 255));
+	tipPalette.setColor(QPalette::ToolTipBase, QColor(57, 56, 58));
+	QToolTip::setPalette(tipPalette);
+	a.setStyleSheet(""
+		"QToolTip {"
+			"color: rgb(255, 255, 255);"
+			"background-color: rgb(57, 56, 58);"
+			"border: 1px solid rgb(255, 255, 255);"
+		"}"
+		);
+
+	timing.probe();
 
 	// This is our MainWidget class containing our GUI and functionality
 	CalcWindow w;
+	timing.mark("window created");
+	timing.logAfterFirstPaint(&w);
 	w.show(); // Show main window
+	timing.mark("shown");
 
 	QTimer::singleShot(0, &w, &CalcWindow::startNetworkOperations);
 

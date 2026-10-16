@@ -75,18 +75,31 @@ These two screenshots show the configuration options available in the applicatio
 
 This software is released under the GPL.  See [LICENCE.md](LICENCE.md) for more details.
 
+The built-in font, ARPCalc Sans ([fonts/ARPCalcSans-Regular.ttf](fonts/ARPCalcSans-Regular.ttf)), is made from Noto Sans and Noto Sans Math by [tools/make_font.py](tools/make_font.py) and is licensed under the SIL Open Font License 1.1: see [fonts/OFL.txt](fonts/OFL.txt).
+
 ## Docker Compilation
 
 The release builds are compiled with docker-compose.  A brief explanation of the scripts in the root of the project repository:
 
-* [dkr_seq.sh](dkr_seq.sh): this runs each docker container in turn in order to build the Windows, Linux and Javascript versions of the project.  The same can be done with `docker-compose up`, but that'll build in parallel rather than series.
+* [dkr_seq.sh](dkr_seq.sh): this runs each docker container in turn in order to build the Windows, Linux and Javascript versions of the project.  The same can be done with `docker compose up`, but that'll build in parallel rather than series.
 * [dkr_js.sh](dkr_js.sh): this just runs the docker container that builds the javascript version.
 * [build_console.sh](build_console.sh): this is intended for use in msys2 on Windows: it builds the Windows version with the console enabled so that debugging output can be seen.
 * [build_release.sh](build_release.sh): this is intended for use in msys2 on Windows: it builds a release version.
 * [get_dlls.sh](get_dlls.sh): this tries to find all the DLLs used in the build in order to make a self-contained release.
 * [zip_winrelease.sh](zip_winrelease.sh): this zips up the release ready for publication.
 
-To build the docker containers on a Linux system, run `docker-compose build`.  This will take quite a long time as it compiles MXE from scratch (as the MXE repositories don't, at the time of writing, include very recent versions of GCC, upon which this code relies).
+To build the docker containers on a Linux system, run `docker compose build`.  This will take quite a long time (a few hours) as it compiles MXE from scratch (MXE's pre-built packages don't include Qt 6).
+
+The Windows container builds two versions of ARPCalc, both zipped into `publish/windows`:
+
+* `arpcalc-windows-static-<version>-<date>-dk.zip`: a single, statically-linked `ARPCalc.exe` with no DLLs, which starts faster.  `latest.html` points at this one.
+* `arpcalc-windows-shared-<version>-<date>-dk.zip`: `ARPCalc.exe` with the Qt DLLs and plugins it uses.
+
+## Start-up Time
+
+Run `ARPCalc.exe --startup-timing` to append a line to `startup-timing.log` (next to `ARPCalc.exe`, or in `%TEMP%` if that folder isn't writable) giving the time at which each stage of start-up was reached.  The times are measured from when Windows created the process, so `main()` is the time taken to load the DLLs (including any antivirus scanning of them), and the CPU time shows how much of the total was spent working rather than waiting.
+
+When installing a new build, delete the old `plugins` folder (and old DLLs) rather than unzipping over it: Qt reads every plugin it finds in the plugin folders it uses, so leftover plugins slow start-up.
 
 ## Build Notes for Compilation On Windows
 
@@ -143,3 +156,15 @@ qmake-qt6.exe && make clean && make 2>&1
 bash get_dlls.sh
 ```
 <!-- vim: set ft=pandoc : -->
+
+## Diagnosing Crashes
+
+If the Windows version crashes, it appends a report to `crash.log` next to `ARPCalc.exe` (or to `ARPCalc-crash.log` in `%TEMP%` if that folder isn't writable).  The report gives the exception and a backtrace as `module+offset` lines.
+
+The docker build keeps the debug information for each zip file in `symbols/<zip file name>.exe.debug`.  To turn an `ARPCalc.exe+0x...` line into a function and source line, add the image base (`0x140000000`) to the offset and run (in the Windows docker container, which has the MXE tools):
+
+    x86_64-w64-mingw32.shared-addr2line -f -C -e symbols/<zip file name>.exe.debug 0x140012345
+
+For every line except the first, subtract 1 from the address (it is a return address, so points just after the call).
+
+The calculator core can also be tested with random key presses under AddressSanitizer by running [tests/run_fuzz.sh](tests/run_fuzz.sh) (needs `g++`, `libmpfr-dev` and `libgmp-dev`).
