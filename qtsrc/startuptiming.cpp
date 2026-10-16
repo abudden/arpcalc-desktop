@@ -136,7 +136,7 @@ void StartupTiming::probe()
 				"ΖΗΘΙΚΛΜΝΞΟΠΡΣΤ"
 				"ΥΦΧΨΩαβγδεζηθι"
 				"κλμνξοπρστυφχψ"
-				"ω –€←↑→↓↔√∞");
+				"ω –€←↑→↓↔⇔√∞");
 
 	// Which of them the main font doesn't have (and so need a fallback
 	// font).  The font used to check doesn't do any font fallback itself.

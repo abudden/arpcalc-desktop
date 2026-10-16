@@ -75,6 +75,8 @@ These two screenshots show the configuration options available in the applicatio
 
 This software is released under the GPL.  See [LICENCE.md](LICENCE.md) for more details.
 
+The built-in font, ARPCalc Sans ([fonts/ARPCalcSans-Regular.ttf](fonts/ARPCalcSans-Regular.ttf)), is made from Noto Sans and Noto Sans Math by [tools/make_font.py](tools/make_font.py) and is licensed under the SIL Open Font License 1.1: see [fonts/OFL.txt](fonts/OFL.txt).
+
 ## Docker Compilation
 
 The release builds are compiled with docker-compose.  A brief explanation of the scripts in the root of the project repository:
