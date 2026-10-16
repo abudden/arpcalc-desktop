@@ -141,6 +141,9 @@ class AF
 		bool operator>=(double & b) const;
 
 		void reduce_precision();
+		// Rounded to a number of decimal places, e.g. so that 0.15 * 100 gives
+		// exactly 15 rather than 14.999... (whose floor() is 14)
+		AF roundToPlaces(int places);
 
 	private:
 		void init_mpfr();

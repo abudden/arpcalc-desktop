@@ -197,7 +197,7 @@ ErrorCode Stack::convertLitresPer100KMToKilometresPerLitre() {
 
 ErrorCode Stack::convertDayOfYearToDateInCurrentYear() {
 	AF dayofyear = pop();
-	if ((dayofyear < 0) || (dayofyear > 366)) {
+	if ((dayofyear < 1) || (dayofyear >= 367)) {
 		push(dayofyear);
 		return InvalidConversion;
 	}
@@ -207,11 +207,18 @@ ErrorCode Stack::convertDayOfYearToDateInCurrentYear() {
 	fp = fp * AF("10000");
 	int year_i = fp.round().toInt();
 
-	if (year_i < 1900) {
+	// No year (or an implausible one) means this year
+	if (year_i < 1600) {
 		auto now = std::chrono::system_clock::now();
 		std::time_t tt = std::chrono::system_clock::to_time_t(now);
 		struct std::tm *parts = std::localtime(&tt);
-		year_i = parts->tm_year;
+		year_i = parts->tm_year + 1900;
+	}
+
+	// Day 366 is only valid in a leap year
+	if ((dayofyear_i > 365) && ( ! std::chrono::year{year_i}.is_leap())) {
+		push(dayofyear);
+		return InvalidConversion;
 	}
 
 	int num = dayofyear_i;
@@ -247,17 +254,25 @@ ErrorCode Stack::convertDayOfYearToDateInCurrentYear() {
 
 ErrorCode Stack::convertDateInCurrentYearToDayOfYear() {
 	AF xval = pop();
+	// toInt() can't represent a huge number
+	if ((xval < 1) || (xval >= 32)) {
+		push(xval);
+		return InvalidConversion;
+	}
 
 	AF date_form = xval;
 
+	// DD.MMYYYY is decimal digits, but in binary 0.2022 * 10000 can come out
+	// as 2021.999..., so round to the digits that matter before each floor
 	int dom = date_form.floor().toInt();
 	date_form = date_form - date_form.floor();
-	date_form = date_form * AF("100");
+	date_form = (date_form * AF("100")).roundToPlaces(4);
 	int m = date_form.floor().toInt();
 	date_form = date_form - date_form.floor();
-	date_form = date_form * AF("10000");
+	date_form = (date_form * AF("10000")).roundToPlaces(0);
 	int year_i = date_form.floor().toInt();
-	if (year_i < 1900) {
+	// No year (or an implausible one) means this year
+	if (year_i < 1600) {
 		auto now = std::chrono::system_clock::now();
 		std::time_t tt = std::chrono::system_clock::to_time_t(now);
 		struct std::tm *parts = std::localtime(&tt);
@@ -274,13 +289,19 @@ ErrorCode Stack::convertDateInCurrentYearToDayOfYear() {
 		31, 31, 30, 31, 30, 31
 	};
 
+	bool leap = std::chrono::year{year_i}.is_leap();
+	if ((dom < 1) || (dom > days_in_month[m-1]) || (( ! leap) && (m == 2) && (dom > 28))) {
+		push(xval);
+		return InvalidConversion;
+	}
+
 	int dayofyear = 0;
 	for (int im = 0; im < (m-1); im++) {
 		dayofyear += days_in_month[im];
 	}
 	dayofyear += dom;
 
-	if ( ( ! std::chrono::year{year_i}.is_leap()) && (dayofyear > 59)) { // day 59 is 28th of February
+	if (( ! leap) && (dayofyear > 59)) { // day 59 is 28th of February
 		dayofyear -= 1;
 	}
 
