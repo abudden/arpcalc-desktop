@@ -146,6 +146,9 @@ class Stack
 		ErrorCode bitwiseand();
 		ErrorCode bitwiseor();
 		ErrorCode bitwisexor();
+		ErrorCode shiftleft();
+		ErrorCode shiftright();
+		ErrorCode shift(bool left);
 		ErrorCode bitwisenot();
 		ErrorCode twoscomplement();
 		ErrorCode absolute();

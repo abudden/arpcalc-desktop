@@ -51,6 +51,8 @@ void CommandHandler::populateKeyMaps()
 		{"9", { .plainCmd = "9" }},
 		{"\\", { .shiftCmd = "bitwiseor" }},
 		{"|", { .plainCmd = "bitwiseor", .shiftCmd = "bitwiseor" }},
+		{"<", { .plainCmd = "shiftleft", .shiftCmd = "shiftleft" }},
+		{">", { .plainCmd = "shiftright", .shiftCmd = "shiftright" }},
 		{"Backspace", { .plainCmd = "backspace" }},
 		{".", { .plainCmd = "." }},
 		{"`", { .plainCmd = "clear" }}, // Backtick

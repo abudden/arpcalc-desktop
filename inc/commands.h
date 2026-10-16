@@ -65,7 +65,8 @@ typedef enum _DispOpt {
 	CheckForNewVersions,
 	AmericanUnits,
 	EuropeanDecimal,
-	ShowHelpOnStart
+	ShowHelpOnStart,
+	ClassicLayout
 	// If adding any here, make sure they're added to getDispOptionByName
 	// and the various settings saving places.
 } DispOpt;
@@ -86,7 +87,8 @@ const std::map<std::string, DispOpt> DispOptNames = {
 	{NAME(CheckForNewVersions)},
 	{NAME(AmericanUnits)},
 	{NAME(EuropeanDecimal)},
-	{NAME(ShowHelpOnStart)}
+	{NAME(ShowHelpOnStart)},
+	{NAME(ClassicLayout)}
 };
 
 typedef struct _DisplayOptions {

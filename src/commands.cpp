@@ -856,6 +856,12 @@ ErrorCode CommandHandler::keypress(std::string key)
 	else if (key == "bitwiseor") {
 		completeEntering(takesValue); ec = st.bitwiseor(); st.saveHistory();
 	}
+	else if (key == "shiftleft") {
+		completeEntering(takesValue); ec = st.shiftleft(); st.saveHistory();
+	}
+	else if (key == "shiftright") {
+		completeEntering(takesValue); ec = st.shiftright(); st.saveHistory();
+	}
 	else if (key == "bitwisexor") {
 		completeEntering(takesValue); ec = st.bitwisexor(); st.saveHistory();
 	}
@@ -1557,6 +1563,7 @@ void CommandHandler::setDefaultOptions()
 	setOption(AmericanUnits, false);
 	setOption(EuropeanDecimal, false);
 	setOption(ShowHelpOnStart, true);
+	setOption(ClassicLayout, false);
 
 	setSizeName("Medium");
 
