@@ -689,9 +689,12 @@ ErrorCode Stack::convertHoursToHms()
 		parthours = hours - x;
 		sign = -1;
 	}
-	minutes = parthours * AF("60.0");
+	// The hours are rounded (e.g. 6:48 is 6.8), so the minutes can come out
+	// as 47.999... or the seconds as 59.999...: round them well beyond
+	// anything typed in before taking the floor or carrying.
+	minutes = (parthours * AF("60.0")).roundToPlaces(20);
 	seconds = minutes - minutes.floor();
-	seconds = seconds * AF("60.0");
+	seconds = (seconds * AF("60.0")).roundToPlaces(18);
 	minutes = minutes.floor();
 	// Carry with a single division rather than by repeatedly subtracting
 	// 60: for a very large X, the rounding in reduce_precision() leaves a
@@ -727,8 +730,8 @@ ErrorCode Stack::convertHoursToHm()
 		parthours = hours - x;
 		sign = -1;
 	}
-	minutes = parthours * 60.0;
-	// See convertHoursToHms() for why this isn't a loop
+	// See convertHoursToHms() for why this is rounded and isn't a loop
+	minutes = (parthours * 60.0).roundToPlaces(20);
 	if (minutes >= 60.0) {
 		AF carry = (minutes / 60.0).floor();
 		minutes = minutes - (carry * 60.0);

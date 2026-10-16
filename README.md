@@ -161,6 +161,8 @@ bash get_dlls.sh
 
 The unit tests for the calculator core (ported from the Android version's tests) can be built and run with [tests/run_tests.sh](tests/run_tests.sh), which needs `g++`, `libmpfr-dev` and `libgmp-dev` but not Qt.  Give test names as arguments to run only those tests.  The test that checks every unit conversion against [python-pint](https://pint.readthedocs.io/) is skipped unless pint 0.9 is installed: set `PYTHON` to a python interpreter that has it (e.g. `PYTHON=~/pint-venv/bin/python tests/run_tests.sh`).
 
+`tests/run_tests.sh` also runs [tests/hms_tests.cpp](tests/hms_tests.cpp), which checks arithmetic in hours/degrees, minutes and seconds as it's done on the calculator: type a value such as `12.8622` (12 hours, 86 minutes and 22 seconds, i.e. 13:26:22), convert it to hours, add or subtract another, and convert back.  It checks hand-picked cases and 2000 random ones of each of H.MMSS, D.MMSS and D.MM against answers worked out in whole hundredths of a second; set `HMS_CASES` to run more.
+
 ## Diagnosing Crashes
 
 If the Windows version crashes, it appends a report to `crash.log` next to `ARPCalc.exe` (or to `ARPCalc-crash.log` in `%TEMP%` if that folder isn't writable).  The report gives the exception and a backtrace as `module+offset` lines.
