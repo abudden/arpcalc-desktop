@@ -81,7 +81,7 @@ The built-in font, ARPCalc Sans ([fonts/ARPCalcSans-Regular.ttf](fonts/ARPCalcSa
 
 The release builds are compiled with docker-compose.  A brief explanation of the scripts in the root of the project repository:
 
-* [dkr_seq.sh](dkr_seq.sh): this runs each docker container in turn in order to build the Windows, Linux and Javascript versions of the project.  The same can be done with `docker compose up`, but that'll build in parallel rather than series.
+* [dkr_seq.sh](dkr_seq.sh): this runs each docker container in turn in order to run the tests and then build the Javascript, Windows and Linux versions of the project, stopping at the first that fails.  The same can be done with `docker compose up`, but that'll build in parallel rather than series (and carries on if one fails).
 * [dkr_js.sh](dkr_js.sh): this just runs the docker container that builds the javascript version.
 * [build_console.sh](build_console.sh): this is intended for use in msys2 on Windows: it builds the Windows version with the console enabled so that debugging output can be seen.
 * [build_release.sh](build_release.sh): this is intended for use in msys2 on Windows: it builds a release version.
@@ -159,7 +159,13 @@ bash get_dlls.sh
 
 ## Tests
 
-The unit tests for the calculator core (ported from the Android version's tests) can be built and run with [tests/run_tests.sh](tests/run_tests.sh), which needs `g++`, `libmpfr-dev` and `libgmp-dev` but not Qt.  Give test names as arguments to run only those tests.  The test that checks every unit conversion against [python-pint](https://pint.readthedocs.io/) is skipped unless pint 0.9 is installed: set `PYTHON` to a python interpreter that has it (e.g. `PYTHON=~/pint-venv/bin/python tests/run_tests.sh`).
+The tests for the calculator core run in Docker, so nothing needs installing:
+
+    docker compose up --exit-code-from cpparpcalc_tests cpparpcalc_tests
+
+This runs [tests/docker_tests.sh](tests/docker_tests.sh) in the `cpparpcalc_tests` container: the unit tests, the H.MMSS tests (both below) and 20 runs of [tests/run_fuzz.sh](tests/run_fuzz.sh) (set `FUZZ_SEEDS` in the container for more).  The exit code is non-zero if anything fails.  `dkr_seq.sh` and `docker compose up` run the tests first, and `dkr_seq.sh` stops before building anything if they fail.
+
+Without Docker, the unit tests for the calculator core (ported from the Android version's tests) can be built and run with [tests/run_tests.sh](tests/run_tests.sh), which needs `g++`, `libmpfr-dev` and `libgmp-dev` but not Qt.  Give test names as arguments to run only those tests.  The test that checks every unit conversion against [python-pint](https://pint.readthedocs.io/) (0.26.1 in the container) is skipped unless pint is installed: set `PYTHON` to a python interpreter that has it (e.g. `PYTHON=~/pint-venv/bin/python tests/run_tests.sh`).
 
 `tests/run_tests.sh` also runs [tests/hms_tests.cpp](tests/hms_tests.cpp), which checks arithmetic in hours/degrees, minutes and seconds as it's done on the calculator: type a value such as `12.8622` (12 hours, 86 minutes and 22 seconds, i.e. 13:26:22), convert it to hours, add or subtract another, and convert back.  It checks hand-picked cases and 2000 random ones of each of H.MMSS, D.MMSS and D.MM against answers worked out in whole hundredths of a second; set `HMS_CASES` to run more.
 
