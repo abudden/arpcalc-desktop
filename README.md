@@ -81,14 +81,14 @@ The built-in font, ARPCalc Sans ([fonts/ARPCalcSans-Regular.ttf](fonts/ARPCalcSa
 
 The release builds are compiled with docker-compose.  A brief explanation of the scripts in the root of the project repository:
 
-* [dkr_seq.sh](dkr_seq.sh): this runs each docker container in turn in order to build the Windows, Linux and Javascript versions of the project.  The same can be done with `docker-compose up`, but that'll build in parallel rather than series.
+* [dkr_seq.sh](dkr_seq.sh): this runs each docker container in turn in order to build the Windows, Linux and Javascript versions of the project.  The same can be done with `docker compose up`, but that'll build in parallel rather than series.
 * [dkr_js.sh](dkr_js.sh): this just runs the docker container that builds the javascript version.
 * [build_console.sh](build_console.sh): this is intended for use in msys2 on Windows: it builds the Windows version with the console enabled so that debugging output can be seen.
 * [build_release.sh](build_release.sh): this is intended for use in msys2 on Windows: it builds a release version.
 * [get_dlls.sh](get_dlls.sh): this tries to find all the DLLs used in the build in order to make a self-contained release.
 * [zip_winrelease.sh](zip_winrelease.sh): this zips up the release ready for publication.
 
-To build the docker containers on a Linux system, run `docker-compose build`.  This will take quite a long time (a few hours) as it compiles MXE from scratch (MXE's pre-built packages don't include Qt 6).
+To build the docker containers on a Linux system, run `docker compose build`.  This will take quite a long time (a few hours) as it compiles MXE from scratch (MXE's pre-built packages don't include Qt 6).
 
 The Windows container builds two versions of ARPCalc, both zipped into `publish/windows`:
 
