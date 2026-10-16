@@ -75,7 +75,7 @@ These two screenshots show the configuration options available in the applicatio
 
 This software is released under the GPL.  See [LICENCE.md](LICENCE.md) for more details.
 
-The built-in font, ARPCalc Sans ([fonts/ARPCalcSans-Regular.ttf](fonts/ARPCalcSans-Regular.ttf)), is made from Noto Sans and Noto Sans Math by [tools/make_font.py](tools/make_font.py) and is licensed under the SIL Open Font License 1.1: see [fonts/OFL.txt](fonts/OFL.txt).
+The built-in font, ARPCalc Sans ([fonts/ARPCalcSans-Regular.ttf](fonts/ARPCalcSans-Regular.ttf)), is made from Noto Sans and Noto Sans Math by [tools/make_font.py](tools/make_font.py) and is licensed under the SIL Open Font License 1.1: see [fonts/OFL.txt](fonts/OFL.txt).  The same script makes [fonts/ARPCalcSans-Medium.ttf](fonts/ARPCalcSans-Medium.ttf) (from Noto Sans Medium), which the Android version uses on its buttons.
 
 ## Docker Compilation
 

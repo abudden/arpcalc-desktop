@@ -2,7 +2,10 @@
 """
 Builds fonts/ARPCalcSans-Regular.ttf: the parts of Noto Sans that ARPCalc
 needs, plus the arrows and mathematical operators (which Noto Sans doesn't
-have) from Noto Sans Math, in one font.
+have) from Noto Sans Math, in one font.  Given another weight of Noto Sans
+(e.g. NotoSans-Medium.ttf, for the Android version's buttons), it builds that
+weight instead (fonts/ARPCalcSans-Medium.ttf); Noto Sans Math only comes in
+regular, so the arrows and operators are the same in every weight.
 
 One font with every character the app shows means Qt never looks for a
 fallback font, which on Windows means reading every installed font (about
@@ -12,6 +15,7 @@ that it can't be confused with an installed Noto Sans.
 
 Needs fonttools (pip install fonttools).  Usage:
     tools/make_font.py NotoSans-Regular.ttf NotoSansMath-Regular.ttf
+    tools/make_font.py NotoSans-Medium.ttf NotoSansMath-Regular.ttf
 with the fonts from https://github.com/notofonts/notofonts.github.io
 (fonts/NotoSans/hinted/ttf and fonts/NotoSansMath/hinted/ttf).
 """
@@ -24,8 +28,7 @@ from fontTools.merge import Merger
 from fontTools.ttLib import TTFont
 
 FAMILY = "ARPCalc Sans"
-OUTPUT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-        "..", "fonts", "ARPCalcSans-Regular.ttf")
+FONTS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "fonts")
 
 # From Noto Sans: Basic Latin, Latin-1 Supplement, Latin Extended-A, Greek,
 # General Punctuation, superscripts and subscripts, currency symbols
@@ -76,18 +79,30 @@ def main():
         for attribute in attributes:
             setattr(font[table], attribute, getattr(text_font[table], attribute))
 
+    # The weight (e.g. "Medium") from the Noto Sans font: its typographic
+    # subfamily name if it has one (weights other than regular and bold are
+    # their own family, "Noto Sans Medium", with subfamily "Regular")
+    names = text_font["name"]
+    style = (names.getDebugName(17) or names.getDebugName(2)).strip()
+    # Weights other than regular and bold are their own family for programs
+    # that only know about regular, italic, bold and bold italic
+    legacy_family = FAMILY if (style == "Regular") else (FAMILY + " " + style)
+
     for record in font["name"].names:
-        if record.nameID in (1, 16):
+        if record.nameID == 1:
+            record.string = legacy_family
+        elif record.nameID == 16:
             record.string = FAMILY
         elif record.nameID == 4:
-            record.string = FAMILY + " Regular"
+            record.string = FAMILY + " " + style
         elif record.nameID == 6:
-            record.string = FAMILY.replace(" ", "") + "-Regular"
+            record.string = FAMILY.replace(" ", "") + "-" + style
         elif record.nameID == 3:
-            record.string = "ARPCalc: " + FAMILY + " Regular (from Noto Sans "
+            record.string = "ARPCalc: " + FAMILY + " " + style + " (from Noto Sans "
             record.string += "and Noto Sans Math)"
-    font.save(OUTPUT)
-    print("Created " + os.path.normpath(OUTPUT))
+    output = os.path.join(FONTS, "ARPCalcSans-" + style + ".ttf")
+    font.save(output)
+    print("Created " + os.path.normpath(output))
 
 
 if __name__ == "__main__":
