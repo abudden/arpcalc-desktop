@@ -221,6 +221,14 @@ std::map<std::string, Option> CommandHandler::getOptions()
 			.iconAction = [](CommandHandler *c) -> std::string { return c->getCheckIcon(c->getOption(EuropeanDecimal)); },
 			.location = {1, 2, 3}
 		}},
+		{"Classic Keypad Layout", {
+			.helpText = "Use the keypad layout from before version 1.4: RAND and EXP on the main buttons rather than EXP and\n"
+			"y<sup><small>x</small></sup>, and &radic;x and y<sup><small>x</small></sup> on the functions page rather than\n"
+			"the bit shifts (x &lt;&lt; y and x &gt;&gt; y).",
+			.clickAction = [](CommandHandler *c) { c->toggleOption(ClassicLayout); },
+			.iconAction = [](CommandHandler *c) -> std::string { return c->getCheckIcon(c->getOption(ClassicLayout)); },
+			.location = {1, 5, 0}
+		}},
 		{"Decimal Base Bias", {
 			.helpText = "When set, the first press of \"BASE\" will change to decimal when in any other base.",
 			.clickAction = [](CommandHandler *c) { c->toggleOption(DecimalBaseBias); },
@@ -272,8 +280,8 @@ std::vector< std::vector<BI> > CommandHandler::getGrid(std::string grid)
 			},
 			{
 				{"base", "BASE", "Switch between decimal, hexadecimal, binary and octal."},
-				{"random", "RAND", "Push a random number onto the stack."},
 				{"exponent", "EXP", "Add an exponent to the entered value."},
+				{"power", "y<sup><small>x</small></sup>", "Raise Y to the power of X."},
 				{"sqrt", "&radic;x", "Calculate the square-root of X."}, // Available if needed as duplicated on funcpad
 				{"reciprocal", "1/x", "Calculate the reciprocal of X."},
 				{"divide", "&divide;", "Divide Y by X."}
@@ -310,6 +318,10 @@ std::vector< std::vector<BI> > CommandHandler::getGrid(std::string grid)
 			}
 		};
 		result = numpadGrid;
+		if (getOption(ClassicLayout)) {
+			result[1][1] = BI{"random", "RAND", "Push a random number onto the stack."};
+			result[1][2] = BI{"exponent", "EXP", "Add an exponent to the entered value."};
+		}
 		if ( ! getOption(SaveHistory)) {
 			result[4][0] = nop; // remove undo if save history not set
 		}
@@ -345,6 +357,11 @@ std::vector< std::vector<BI> > CommandHandler::getGrid(std::string grid)
 		else {
 			// stet
 		}
+		// EXP does nothing except in decimal (and before, it was where the
+		// hex digits go)
+		if ((dspBase != baseDecimal) && ( ! getOption(ClassicLayout))) {
+			result[1][1] = nop;
+		}
 	}
 	else if ((grid == "funcpad") || (grid == "altfuncpad")) {
 		std::vector< std::vector<BI> > funcGrid{
@@ -365,17 +382,17 @@ std::vector< std::vector<BI> > CommandHandler::getGrid(std::string grid)
 				{"integerpart", "INT", "Remove the floating point part of X, leaving only the integer part - equivalent to FLOOR for X &gt; 0 or CEIL for X &lt; 0."}
 			},
 			{
-				{"sqrt", "&radic;x", "Calculate the square-root of X."},
 				{"cuberoot", "3&radic;x", "Calculate the cube-root of X."},
 				{"xrooty", "x&radic;y", "Calculate the X-root of Y."},
+				{"square", "x<sup><small>2</small></sup>", "Calculate X&times;X."},
 				{"percent", "%", "Convert X to a percentage of Y."}, // TODO: Check operation
 				{"ceiling", "CEIL", "Round up to the nearest integer."},
 				{"floatingpart", "FP", "Remove the integer part of X, leaving only the floating point part."}
 			},
 			{
-				{"square", "x<sup><small>2</small></sup>", "Calculate X&times;X."},
+				{"shiftleft", "x &lt;&lt; y", "Shift the integer part of X left by Y bits (within the bit count)."},
+				{"shiftright", "x &gt;&gt; y", "Shift the integer part of X right by Y bits (within the bit count)."},
 				{"cube", "x<sup><small>3</small></sup>", "Calculate X&times;X&times;X"},
-				{"power", "y<sup><small>x</small></sup>", "Raise Y to the power of X."},
 				{"twoscomp", "s2c", "Calculate the signed two's complement of X."},
 				{"remainder", "REM", "Calculate the remainder after an integer division of Y / X."},
 				{"integerdivide", "INTDIV", "Perform an integer division Y / X."}
@@ -398,6 +415,17 @@ std::vector< std::vector<BI> > CommandHandler::getGrid(std::string grid)
 			}
 		};
 		result = funcGrid;
+
+		if (getOption(ClassicLayout)) {
+			// Before the shifts were added (and with the duplicates of the
+			// square root and y^x on the main buttons)
+			result[2][0] = BI{"sqrt", "&radic;x", "Calculate the square-root of X."};
+			result[2][1] = BI{"cuberoot", "3&radic;x", "Calculate the cube-root of X."};
+			result[2][2] = BI{"xrooty", "x&radic;y", "Calculate the X-root of Y."};
+			result[3][0] = BI{"square", "x<sup><small>2</small></sup>", "Calculate X&times;X."};
+			result[3][1] = BI{"cube", "x<sup><small>3</small></sup>", "Calculate X&times;X&times;X"};
+			result[3][2] = BI{"power", "y<sup><small>x</small></sup>", "Raise Y to the power of X."};
+		}
 
 		if (grid == "altfuncpad") {
 			result[4][2] = BI{"inversesinh", "sinh<sup><small>-1</small></sup>(x)", "Calculate the inverse hyperbolic sine of X."};
@@ -547,6 +575,10 @@ std::vector< std::vector<BI> > CommandHandler::getGrid(std::string grid)
 			vres.back().push_back(nop);
 			colCount += 1;
 			totalCount += 1;
+		}
+		// RAND at the end of the fifth row, apart from the constants
+		if ((vres.size() > 4) && (vres[4].size() > 5) && (vres[4][5].name == "NOP")) {
+			vres[4][5] = BI{"random", "RAND", "Push a random number onto the stack."};
 		}
 		BI density = {.name="DensityByName", .display="Material Density", .helpText="Material Densities in kg/m&#x00B3;", .doubleWidth=true};
 		vres.back().push_back(density);

@@ -21,9 +21,9 @@
  *
  * These were ported from the Android (Kotlin) version's tests in
  * app/src/test: CommandsTest.kt, ConversionTest.kt, GridsTest.kt,
- * OpsTest.kt, SITest.kt and StackTest.kt.  Each C++ test function has the
- * same name as the Kotlin @Test it came from and uses the same values and
- * expectations, except where a comment says otherwise.
+ * OpsTest.kt, SITest.kt, StackTest.kt and LayoutTest.kt.  Each C++ test
+ * function has the same name as the Kotlin @Test it came from and uses the
+ * same values and expectations, except where a comment says otherwise.
  *
  * defaultConversionTests (like the Kotlin original) exports the list of
  * units and runs tests/generate_conversion_tests.py, which uses python-pint
@@ -63,6 +63,8 @@ static std::string describe(const std::string &v) { return "\"" + v + "\""; }
 static std::string describe(const char *v) { return describe(std::string(v)); }
 static std::string describe(bool v) { return v ? "true" : "false"; }
 static std::string describe(int v) { return std::to_string(v); }
+static std::string describe(long v) { return std::to_string(v); }
+static std::string describe(long long v) { return std::to_string(v); }
 static std::string describe(ErrorCode v) { return "ErrorCode(" + std::to_string((int) v) + ")"; }
 static std::string describe(AF v) { return v.toString(); }
 static std::string describe(double v)
@@ -1058,6 +1060,103 @@ static void stackTests()
 }
 
 /* -------------------------------------------------------------------- */
+/* LayoutTest.kt (the keypad layout and the bit shifts)                  */
+/* -------------------------------------------------------------------- */
+
+static std::vector<std::string> names(const std::vector<BI> &row, size_t count = 6)
+{
+	std::vector<std::string> result;
+	for (size_t i=0;(i<row.size()) && (i<count);i++) {
+		result.push_back(row[i].name);
+	}
+	return result;
+}
+
+static void newLayout()
+{
+	CommandHandler ch;
+	ch.setDefaultOptions();
+	CHECK_EQUAL((std::vector<std::string>{"base", "exponent", "power", "sqrt", "reciprocal", "divide"}),
+		names(ch.getGrid("numpad")[1]));
+	ch.selectBase(baseHexadecimal);
+	CHECK_EQUAL((std::vector<std::string>{"base", "NOP", "A", "B", "C", "divide"}),
+		names(ch.getGrid("numpad")[1]));
+	ch.selectBase(baseDecimal);
+	for (std::string pad : {"funcpad", "altfuncpad"}) {
+		auto grid = ch.getGrid(pad);
+		CHECK_EQUAL((std::vector<std::string>{"cuberoot", "xrooty", "square"}), names(grid[2], 3));
+		CHECK_EQUAL((std::vector<std::string>{"shiftleft", "shiftright", "cube"}), names(grid[3], 3));
+	}
+	// RAND is at the end of the fifth row of constants, in both layouts
+	for (bool classic : {false, true}) {
+		ch.setOption(ClassicLayout, classic);
+		auto constants = ch.getGrid("constpad");
+		CHECK_EQUAL(std::string("random"), constants[4][5].name);
+		int count = 0;
+		for (auto &row : constants) {
+			for (auto &b : row) {
+				count += (b.name == "random") ? 1 : 0;
+			}
+		}
+		CHECK_EQUAL(1, count);
+	}
+}
+
+static void classicLayout()
+{
+	CommandHandler ch;
+	ch.setDefaultOptions();
+	ch.setOption(ClassicLayout, true);
+	CHECK_EQUAL((std::vector<std::string>{"base", "random", "exponent", "sqrt", "reciprocal", "divide"}),
+		names(ch.getGrid("numpad")[1]));
+	for (std::string pad : {"funcpad", "altfuncpad"}) {
+		auto grid = ch.getGrid(pad);
+		CHECK_EQUAL((std::vector<std::string>{"sqrt", "cuberoot", "xrooty"}), names(grid[2], 3));
+		CHECK_EQUAL((std::vector<std::string>{"square", "cube", "power"}), names(grid[3], 3));
+	}
+	CHECK(ch.getOptions().contains("Classic Keypad Layout"));
+}
+
+static intmax_t shiftResult(const std::string &command, intmax_t x, int y, BitCount bits = bc32)
+{
+	CommandHandler ch;
+	ch.setDefaultOptions();
+	ch.setBitCount(bits);
+	ch.st.push(AF(y));
+	ch.st.push(AF(x));
+	CHECK_EQUAL(NoError, ch.keypress(command));
+	return ch.st.pop().toLong();
+}
+
+static void shifts()
+{
+	CHECK_EQUAL((intmax_t) 0x84CA, shiftResult("shiftleft", 0x4265, 1));
+	CHECK_EQUAL((intmax_t) 0x2132, shiftResult("shiftright", 0x4265, 1));
+	CHECK_EQUAL((intmax_t) 0x42650, shiftResult("shiftleft", 0x4265, 4));
+	CHECK_EQUAL((intmax_t) 0x4265, shiftResult("shiftleft", 0x4265, 0));
+	// Bits shifted beyond the bit count are lost
+	CHECK_EQUAL((intmax_t) 0x2, shiftResult("shiftleft", 0x80000001LL, 1));
+	CHECK_EQUAL((intmax_t) 0xCA, shiftResult("shiftleft", 0x4265, 1, bc8));
+	CHECK_EQUAL((intmax_t) 0, shiftResult("shiftleft", 0x4265, 32));
+	CHECK_EQUAL((intmax_t) 0, shiftResult("shiftleft", 0x4265, 100));
+	CHECK_EQUAL((intmax_t) 0, shiftResult("shiftright", 0x4265, 100));
+	// A logical shift: no sign extension
+	CHECK_EQUAL((intmax_t) 0x7FFFFFFF, shiftResult("shiftright", 0xFFFFFFFFLL, 1));
+	// Negative shifts go the other way
+	CHECK_EQUAL((intmax_t) 0x2132, shiftResult("shiftleft", 0x4265, -1));
+	CHECK_EQUAL((intmax_t) 0x84CA, shiftResult("shiftright", 0x4265, -1));
+
+	// As typed in hex
+	CommandHandler ch;
+	ch.setDefaultOptions();
+	ch.selectBase(baseHexadecimal);
+	for (std::string k : {"1", "enter", "4", "2", "6", "5", "shiftleft"}) {
+		ch.keypress(k);
+	}
+	CHECK_EQUAL(std::string("0x84CA"), ch.getXDisplay());
+}
+
+/* -------------------------------------------------------------------- */
 
 typedef struct _TestCase {
 	std::string name;
@@ -1085,6 +1184,10 @@ static const std::vector<TestCase> allTests = {
 	TEST(defaultSITests),
 	// StackTest.kt
 	TEST(stackTests),
+	// LayoutTest.kt
+	TEST(newLayout),
+	TEST(classicLayout),
+	TEST(shifts),
 };
 
 int main(int argc, char **argv)

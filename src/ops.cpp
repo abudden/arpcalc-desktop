@@ -209,6 +209,42 @@ ErrorCode Stack::integerdivide()
 	return NoError;
 }
 
+// X shifted left (or right) by Y bits, within the bit count, e.g. with 32
+// bits 0x4265 << 1 is 0x84CA and 0x80000001 << 1 is 0x2.  A negative Y
+// shifts the other way.
+ErrorCode Stack::shift(bool left)
+{
+	uint64_t xl = ((uint64_t) pop().round().toLong()) & ((uint64_t) getBitMask());
+	AF y = pop().round();
+	if (y < 0) {
+		left = ! left;
+		y = AF(0) - y;
+	}
+	// Shifting by 64 or more is undefined in C++
+	if (y >= 64) {
+		xl = 0;
+	}
+	else if (left) {
+		xl <<= y.toInt();
+	}
+	else {
+		xl >>= y.toInt();
+	}
+	xl &= (uint64_t) getBitMask();
+	push(AF((intmax_t) xl));
+	return NoError;
+}
+
+ErrorCode Stack::shiftleft()
+{
+	return shift(true);
+}
+
+ErrorCode Stack::shiftright()
+{
+	return shift(false);
+}
+
 ErrorCode Stack::bitwiseand()
 {
 	intmax_t xl = pop().round().toLong();
