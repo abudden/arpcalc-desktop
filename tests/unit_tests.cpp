@@ -49,6 +49,7 @@
 #include <string>
 #include <vector>
 #include "commands.h"
+#include "strutils.h"
 
 /* -------------------------------------------------------------------- */
 /* Minimal test framework                                                */
@@ -1157,6 +1158,38 @@ static void shifts()
 }
 
 /* -------------------------------------------------------------------- */
+/* Desktop only: the check for a newer version                           */
+/* -------------------------------------------------------------------- */
+
+static void newerVersionTests()
+{
+	const int v140[4] = {1, 4, 0, 1};
+	const int v134[4] = {1, 3, 4, 0};
+	const int v133[4] = {1, 3, 3, 7};
+	const int v200[4] = {2, 0, 0, 0};
+	const int v199[4] = {1, 9, 9, 0};
+	const int none[4] = {0, 0, 0, 0};
+
+	// v1.4.0 was told 1.3.4 was newer: the parts were compared one by one
+	// (0 < 4) rather than in order
+	CHECK( ! isNewerVersion(v140, "1,3,4,1\n"));
+	CHECK( ! isNewerVersion(v134, "1,3,4,1\n"));
+	CHECK(isNewerVersion(v133, "1,3,4,1\n"));
+	CHECK(isNewerVersion(v134, "1,4,0,0"));
+	CHECK(isNewerVersion(v134, "2,0,0,0"));
+	CHECK( ! isNewerVersion(v200, "1,9,9,9"));
+	CHECK(isNewerVersion(v199, "1,10,0,0"));
+	// Only the first three parts count
+	CHECK( ! isNewerVersion(v140, "1,4,0,9"));
+	// A build without a version number is never out of date
+	CHECK( ! isNewerVersion(none, "1,4,0,1"));
+	// Anything else on the website (e.g. an error page) is ignored
+	for (std::string bad : {"", "1,4", "<html>", "1,x,0,1", "1,,0,1", "99999999,0,0,0"}) {
+		CHECK_MSG( ! isNewerVersion(v134, bad), "isNewerVersion(1.3.4, \"" + bad + "\")");
+	}
+}
+
+/* -------------------------------------------------------------------- */
 
 typedef struct _TestCase {
 	std::string name;
@@ -1188,6 +1221,8 @@ static const std::vector<TestCase> allTests = {
 	TEST(newLayout),
 	TEST(classicLayout),
 	TEST(shifts),
+	// Desktop only
+	TEST(newerVersionTests),
 };
 
 int main(int argc, char **argv)

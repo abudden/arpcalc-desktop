@@ -22,6 +22,7 @@
 #include <cmath>
 #include <zip.h>
 #include "calcwindow.h"
+#include "strutils.h"
 #include "choicewindow.h"
 #include "clickablelabel.h"
 #include "startuptiming.h"
@@ -308,33 +309,8 @@ void CalcWindow::pasteValue()
 
 void CalcWindow::gotLatestVersion(QByteArray data)
 {
-	bool newer_available = false;
 	qDebug() << "Got data; data length = " << data.size();
-	QString versionString = QString(data);
-
-	QStringList parts = versionString.trimmed().split(',');
-	bool all_zero = true;
-	// Only compare the first 3 parts of the version number
-	for (int i=0;i<3;i++) {
-		if (i >= parts.size()) {
-			qDebug() << "Cannot parse previous version number";
-			return;
-		}
-		bool ok = true;
-		int vnum = parts[i].toInt(&ok, 10);
-		if ( ! ok) {
-			qDebug() << "Invalid version number";
-			return;
-		}
-		if (version_nums[i] < vnum) {
-			newer_available = true;
-		}
-		if (version_nums[i] > 0) {
-			all_zero = false;
-		}
-	}
-
-	if ((newer_available) && ( ! all_zero)) {
+	if (isNewerVersion(version_nums, QString(data).toStdString())) {
 		showToast("A newer version is available");
 		showToast("Update at https://www.cgtk.co.uk/software/arpcalc");
 	}

@@ -30,4 +30,11 @@ std::string toUpper(std::string original);
 std::string toLower(std::string original);
 std::string convertWithBase(intmax_t value, int base);
 
+// Whether the version number published on the website ("1,3,4,1": the
+// latest-desktop.txt that get_changeset.py writes) is newer than this build's
+// (version_nums).  Only the first three parts are compared (the fourth is the
+// number of commits since the tag), and a build without a version number (all
+// zeros) is never out of date.  False if latest can't be parsed.
+bool isNewerVersion(const int *current, std::string const &latest);
+
 #endif
