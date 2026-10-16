@@ -34,9 +34,10 @@ TEXT_RANGES = "U+0020-007E,U+00A0-017F,U+0370-03FF,U+2000-206F,U+2070-209F,U+20A
 MATHS_RANGES = "U+2190-21FF,U+2200-22FF"
 
 
-def make_subset(source, ranges, destination):
+def make_subset(source, ranges, destination, layout_features):
     options = subset.Options()
-    options.layout_features = ["*"]
+    options.layout_features = layout_features
+    options.drop_tables += ["MATH"]
     options.name_IDs = ["*"]
     options.notdef_outline = True
     font = TTFont(source)
@@ -55,10 +56,25 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         text = os.path.join(tmp, "text.ttf")
         maths = os.path.join(tmp, "maths.ttf")
-        make_subset(noto_sans, TEXT_RANGES, text)
-        make_subset(noto_sans_math, MATHS_RANGES, maths)
-        # The first font's metrics, names etc are kept
+        make_subset(noto_sans, TEXT_RANGES, text, ["*"])
+        # Without Noto Sans Math's layout features or MATH table (dropped by
+        # make_subset): they bring in the large versions of the operators
+        # (e.g. display-size integrals, nearly three times the text's height)
+        make_subset(noto_sans_math, MATHS_RANGES, maths, [])
+        text_font = TTFont(text)
         font = Merger().merge([text, maths])
+
+    # The merged font's vertical metrics are the largest of the two fonts'
+    # (and its bounding box covers every glyph), which puts the text off
+    # centre on Android (which pads text to the bounding box) and spaces
+    # lines further apart.  Use Noto Sans's metrics, which suit the text.
+    for table, attributes in (
+            ("hhea", ["ascent", "descent", "lineGap"]),
+            ("OS/2", ["sTypoAscender", "sTypoDescender", "sTypoLineGap",
+                      "usWinAscent", "usWinDescent"]),
+            ("head", ["yMin", "yMax"])):
+        for attribute in attributes:
+            setattr(font[table], attribute, getattr(text_font[table], attribute))
 
     for record in font["name"].names:
         if record.nameID in (1, 16):
