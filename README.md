@@ -157,6 +157,10 @@ bash get_dlls.sh
 ```
 <!-- vim: set ft=pandoc : -->
 
+## Tests
+
+The unit tests for the calculator core (ported from the Android version's tests) can be built and run with [tests/run_tests.sh](tests/run_tests.sh), which needs `g++`, `libmpfr-dev` and `libgmp-dev` but not Qt.  Give test names as arguments to run only those tests.  The test that checks every unit conversion against [python-pint](https://pint.readthedocs.io/) is skipped unless pint 0.9 is installed: set `PYTHON` to a python interpreter that has it (e.g. `PYTHON=~/pint-venv/bin/python tests/run_tests.sh`).
+
 ## Diagnosing Crashes
 
 If the Windows version crashes, it appends a report to `crash.log` next to `ARPCalc.exe` (or to `ARPCalc-crash.log` in `%TEMP%` if that folder isn't writable).  The report gives the exception and a backtrace as `module+offset` lines.
