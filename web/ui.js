@@ -106,13 +106,16 @@ function setupUi(sizeName, winWidth, winHeight) {
 		height: entry_height,
 		css: "txtEntry"
 	};
-	var lytTabsCfg = {cols: [
+	var tabButtons = [
 		{view: "button", type: "image", height: tab_width, width: tab_width, click: tabButtonClicked, id: "imNumPad", image: resource_root+"/images/"+btn_folder+"/numpad.png"},
 		{view: "button", type: "image", height: tab_width, width: tab_width, click: tabButtonClicked, id: "imFuncPad", image: resource_root+"/images/"+btn_folder+"/funcpad.png"},
 		{view: "button", type: "image", height: tab_width, width: tab_width, click: tabButtonClicked, id: "imConvPad", image: resource_root+"/images/"+btn_folder+"/convpad.png"},
 		{view: "button", type: "image", height: tab_width, width: tab_width, click: tabButtonClicked, id: "imConstPad", image: resource_root+"/images/"+btn_folder+"/constpad.png"},
 		{view: "button", type: "image", height: tab_width, width: tab_width, click: tabButtonClicked, id: "imOptPad", image: resource_root+"/images/"+btn_folder+"/optpad.png"},
-	], id: "lytTabs"};
+	];
+	// A row above the keys, or a column beside them when turned sideways
+	var lytTabsCfg = {id: "lytTabs"};
+	lytTabsCfg[landscape ? "rows" : "cols"] = tabButtons;
 	var lytPadsCfg = {cols: [
 		{rows: [
 			{cols: [
@@ -207,15 +210,19 @@ function setupUi(sizeName, winWidth, winHeight) {
 
 	var layout;
 	if (landscape) {
-		// Turned sideways: the displays on the left and the keys on the right
+		// Turned sideways: the displays on the left, then the tabs in a
+		// column and the keys on the right
+		lytTabsCfg['width'] = tab_width;
 		layout = [
 			{width: s['display_width'],
 			id: "lytDisplay",
 			rows: [lytStatusCfg, lytStackCfg, txtEntryCfg, lblDisclaimerCfg]},
 			{width: spacer_width, id: 'lytSpacer0'},
+			lytTabsCfg,
+			{width: s['tab_gap']},
 			{width: full_width,
 			id: "lytTop",
-			rows: [lytTabsCfg, lytPadsCfg]}
+			rows: [lytPadsCfg]}
 		];
 	}
 	else {
@@ -327,19 +334,22 @@ function getLandscapeSizes(winWidth, winHeight, result) {
 	var hfudge = 8;
 	var gap = 8;
 	result['landscape'] = true;
+	result['tab_gap'] = 4;
 
-	// Keys height = tab+(6*btn) = tab*(1+(6*64/96)) = tab*5
-	var tw_from_height = (winHeight-vfudge)/5.0;
-	// Leave at least 40% of the width for the displays
-	var tw_from_width = (winWidth*0.6)/5.0;
-	result['tab_width'] = Math.min(tw_from_height, tw_from_width);
-	result['btn_height'] = result['tab_width']*64.0/96.0;
-	result['row_height'] = result['btn_height'];
+	// The tabs in a column (5 high) and the keys (6 rows) both use the
+	// full height
+	result['tab_width'] = Math.min((winHeight-vfudge)/5.0, winWidth*0.09);
+	result['row_height'] = (winHeight-vfudge)/6.0;
+	// The keys take half of the width, leaving the rest for the displays
+	result['full_width'] = winWidth*0.5;
+	// Text sized as for the upright layout's buttons, whose width is about
+	// 1.25 times btn_height
+	result['btn_height'] = Math.min(result['row_height'], (result['full_width']/6.0)/1.25);
 	result['entry_height'] = result['btn_height'];
-	result['status_height'] = result['tab_width']*15.0/96.0;
-	result['full_width'] = (result['tab_width']*5)-4;
+	result['status_height'] = result['btn_height']*15.0/64.0;
 	result['spacer_width'] = gap;
-	result['display_width'] = winWidth-hfudge-gap-result['full_width'];
+	result['display_width'] = winWidth - hfudge - gap - result['tab_width'] -
+		result['tab_gap'] - result['full_width'];
 	// The stack takes the rest of the height
 	result['stack_height'] = winHeight - vfudge - result['status_height'] -
 		result['entry_height'] - result['disclaimer_height'];
@@ -410,6 +420,7 @@ function resizeHandler() {
 	
 	if (s['landscape']) {
 		$$("lytDisplay").define("width", s['display_width']);
+		$$("lytTabs").define("width", s['tab_width']);
 	}
 	$$("lytTop").define("width", s['full_width']);
 	$$("lytSpacer0").define("width", s['spacer_width']);
