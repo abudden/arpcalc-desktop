@@ -23,6 +23,7 @@ var lastStoreTab = "romanupperpad";
 var buttonMap = {};
 var btn_folder = "none";
 var row_height;
+var ui_landscape = false;
 
 var sc_standard_style;
 var sc_option_style;
@@ -38,7 +39,8 @@ function setupUi(sizeName, winWidth, winHeight) {
 	var full_width = (tab_width*5)-4;
 	var spacer_width = 0;
 
-	if (sizeName == "Scalable") {
+	var landscape = false;
+	if ((sizeName == "Scalable") && ( ! sc_standard_style)) {
 		sc_standard_style = document.createElement('style');
 		sc_standard_style.type = 'text/css';
 		sc_standard_style.innerHTML = '.txtStandardScalable { font-size: 100%; }';
@@ -60,8 +62,10 @@ function setupUi(sizeName, winWidth, winHeight) {
 		h.appendChild(sc_multi_style);
 		h.appendChild(sc_entry_style);
 		h.appendChild(sc_button_style);
-
+	}
+	if (sizeName == "Scalable") {
 		var s = getSizes(winWidth, winHeight);
+		landscape = s['landscape'];
 		tab_width = s['tab_width'];
 		full_width = s['full_width'];
 		btn_height = s['btn_height'];
@@ -80,138 +84,154 @@ function setupUi(sizeName, winWidth, winHeight) {
 				'#label#' +
 			'</div>' +
 		'</div>';
-	ui = webix.ui({
-		width: winWidth,
-		id: "lytWindow",
-		cols: [
+	var lytStatusCfg = {cols: [
+		{view: "label", label: "EXP:10", id: "txtStatusExponent"},
+		{view: "label", label: ""},
+		{view: "label", label: "DEG", id: "txtStatusAngular"},
+		{view: "label", label: ""},
+		{view: "label", label: "DEC", id: "txtStatusBase"}
+	], height: status_height, id: "lytStatus"};
+	var lytStackCfg = {cols: [
+		{
+			template: "",
+			id: "txtStack", css: "txtMulti"
+		},
+		{
+			template: "",
+			id: "txtBase", css: "txtMulti"
+		}
+	], height: stack_height, id: "lytStack"};
+	var txtEntryCfg = {
+		view: "label", label: "", id: "txtEntry",
+		height: entry_height,
+		css: "txtEntry"
+	};
+	var lytTabsCfg = {cols: [
+		{view: "button", type: "image", height: tab_width, width: tab_width, click: tabButtonClicked, id: "imNumPad", image: resource_root+"/images/"+btn_folder+"/numpad.png"},
+		{view: "button", type: "image", height: tab_width, width: tab_width, click: tabButtonClicked, id: "imFuncPad", image: resource_root+"/images/"+btn_folder+"/funcpad.png"},
+		{view: "button", type: "image", height: tab_width, width: tab_width, click: tabButtonClicked, id: "imConvPad", image: resource_root+"/images/"+btn_folder+"/convpad.png"},
+		{view: "button", type: "image", height: tab_width, width: tab_width, click: tabButtonClicked, id: "imConstPad", image: resource_root+"/images/"+btn_folder+"/constpad.png"},
+		{view: "button", type: "image", height: tab_width, width: tab_width, click: tabButtonClicked, id: "imOptPad", image: resource_root+"/images/"+btn_folder+"/optpad.png"},
+	], id: "lytTabs"};
+	var lytPadsCfg = {cols: [
+		{rows: [
+			{cols: [
+				{view: "button", type: "htmlbutton", id: "b00", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b01", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b02", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b03", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b04", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b05", label: "", click: buttonClicked}
+			], height: row_height, id: "lytBtns0"},
+			{cols: [
+				{view: "button", type: "htmlbutton", id: "b10", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b11", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b12", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b13", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b14", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b15", label: "", click: buttonClicked}
+			], height: row_height, id: "lytBtns1"},
+			{cols: [
+				{view: "button", type: "htmlbutton", id: "b20", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b21", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b22", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b23", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b24", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b25", label: "", click: buttonClicked}
+			], height: row_height, id: "lytBtns2"},
+			{cols: [
+				{view: "button", type: "htmlbutton", id: "b30", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b31", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b32", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b33", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b34", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b35", label: "", click: buttonClicked}
+			], height: row_height, id: "lytBtns3"},
+			{cols: [
+				{view: "button", type: "htmlbutton", id: "b40", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b41", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b42", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b43", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b44", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b45", label: "", click: buttonClicked}
+			], height: row_height, id: "lytBtns4"},
+			{cols: [
+				{view: "button", type: "htmlbutton", id: "b50", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b51", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b52", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b53", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b54", label: "", click: buttonClicked},
+				{view: "button", type: "htmlbutton", id: "b55", label: "", click: buttonClicked}
+			], height: row_height, id: "lytBtns5"}
+		], id: "btnPad"},
+		// Opt Pads
+		{rows: [
+			{cols: [
+				{id: "optBtn00", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
+				{id: "optLbl00", view: "label", label: "", css: "optLbl", template: optLblTemplate},
+				{id: "optBtn01", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
+				{id: "optLbl01", view: "label", label: "", css: "optLbl", template: optLblTemplate}
+			], height: row_height, id: "lytBtns6"},
+			{cols: [
+				{id: "optBtn10", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
+				{id: "optLbl10", view: "label", label: "", css: "optLbl", template: optLblTemplate},
+				{id: "optBtn11", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
+				{id: "optLbl11", view: "label", label: "", css: "optLbl", template: optLblTemplate}
+			], height: row_height, id: "lytBtns7"},
+			{cols: [
+				{id: "optBtn20", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
+				{id: "optLbl20", view: "label", label: "", css: "optLbl", template: optLblTemplate},
+				{id: "optBtn21", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
+				{id: "optLbl21", view: "label", label: "", css: "optLbl", template: optLblTemplate}
+			], height: row_height, id: "lytBtns8"},
+			{cols: [
+				{id: "optBtn30", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
+				{id: "optLbl30", view: "label", label: "", css: "optLbl", template: optLblTemplate},
+				{id: "optBtn31", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
+				{id: "optLbl31", view: "label", label: "", css: "optLbl", template: optLblTemplate}
+			], height: row_height, id: "lytBtns9"},
+			{cols: [
+				{id: "optBtn40", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
+				{id: "optLbl40", view: "label", label: "", css: "optLbl", template: optLblTemplate},
+				{id: "optBtn41", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
+				{id: "optLbl41", view: "label", label: "", css: "optLbl", template: optLblTemplate}
+			], height: row_height, id: "lytBtns10"},
+			{cols: [
+				{id: "optBtn50", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
+				{id: "optLbl50", view: "label", label: "", css: "optLbl", template: optLblTemplate},
+				{id: "toOtherOptPad", view: "button", type: "htmlbutton", label: "More...", click: toOtherOptPadClicked, width: btn_height*2}
+			], height: row_height, id: "lytBtns11"}
+		], id: "optPad"}
+	]};
+	var lblDisclaimerCfg = {id: "lblDisclaimer", view: "label", width: "100%", height: disclaimer_height, click: disclaimerClicked, template: '<span style="line-height: 150%;">'+endlabel+'</span>', css: "disclaimer"+sizeName};
+
+	var layout;
+	if (landscape) {
+		// Turned sideways: the displays on the left and the keys on the right
+		layout = [
+			{width: s['display_width'],
+			id: "lytDisplay",
+			rows: [lytStatusCfg, lytStackCfg, txtEntryCfg, lblDisclaimerCfg]},
 			{width: spacer_width, id: 'lytSpacer0'},
 			{width: full_width,
 			id: "lytTop",
-			rows: [
-				{cols: [
-					{view: "label", label: "EXP:10", id: "txtStatusExponent"},
-					{view: "label", label: ""},
-					{view: "label", label: "DEG", id: "txtStatusAngular"},
-					{view: "label", label: ""},
-					{view: "label", label: "DEC", id: "txtStatusBase"}
-				], height: status_height, id: "lytStatus"},
-				{cols: [
-					{
-						template: "",
-						id: "txtStack", css: "txtMulti"
-					},
-					{
-						template: "",
-						id: "txtBase", css: "txtMulti"
-					}
-				], height: stack_height, id: "lytStack"},
-				{
-					view: "label", label: "", id: "txtEntry",
-					height: entry_height,
-					css: "txtEntry"
-				},
-				{cols: [
-					{view: "button", type: "image", height: tab_width, width: tab_width, click: tabButtonClicked, id: "imNumPad", image: resource_root+"/images/"+btn_folder+"/numpad.png"},
-					{view: "button", type: "image", height: tab_width, width: tab_width, click: tabButtonClicked, id: "imFuncPad", image: resource_root+"/images/"+btn_folder+"/funcpad.png"},
-					{view: "button", type: "image", height: tab_width, width: tab_width, click: tabButtonClicked, id: "imConvPad", image: resource_root+"/images/"+btn_folder+"/convpad.png"},
-					{view: "button", type: "image", height: tab_width, width: tab_width, click: tabButtonClicked, id: "imConstPad", image: resource_root+"/images/"+btn_folder+"/constpad.png"},
-					{view: "button", type: "image", height: tab_width, width: tab_width, click: tabButtonClicked, id: "imOptPad", image: resource_root+"/images/"+btn_folder+"/optpad.png"},
-				], id: "lytTabs"},
-
-				{cols: [
-					{rows: [
-						{cols: [
-							{view: "button", type: "htmlbutton", id: "b00", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b01", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b02", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b03", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b04", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b05", label: "", click: buttonClicked}
-						], height: row_height, id: "lytBtns0"},
-						{cols: [
-							{view: "button", type: "htmlbutton", id: "b10", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b11", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b12", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b13", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b14", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b15", label: "", click: buttonClicked}
-						], height: row_height, id: "lytBtns1"},
-						{cols: [
-							{view: "button", type: "htmlbutton", id: "b20", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b21", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b22", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b23", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b24", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b25", label: "", click: buttonClicked}
-						], height: row_height, id: "lytBtns2"},
-						{cols: [
-							{view: "button", type: "htmlbutton", id: "b30", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b31", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b32", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b33", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b34", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b35", label: "", click: buttonClicked}
-						], height: row_height, id: "lytBtns3"},
-						{cols: [
-							{view: "button", type: "htmlbutton", id: "b40", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b41", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b42", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b43", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b44", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b45", label: "", click: buttonClicked}
-						], height: row_height, id: "lytBtns4"},
-						{cols: [
-							{view: "button", type: "htmlbutton", id: "b50", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b51", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b52", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b53", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b54", label: "", click: buttonClicked},
-							{view: "button", type: "htmlbutton", id: "b55", label: "", click: buttonClicked}
-						], height: row_height, id: "lytBtns5"}
-					], id: "btnPad"},
-					// Opt Pads
-					{rows: [
-						{cols: [
-							{id: "optBtn00", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
-							{id: "optLbl00", view: "label", label: "", css: "optLbl", template: optLblTemplate},
-							{id: "optBtn01", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
-							{id: "optLbl01", view: "label", label: "", css: "optLbl", template: optLblTemplate}
-						], height: row_height, id: "lytBtns6"},
-						{cols: [
-							{id: "optBtn10", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
-							{id: "optLbl10", view: "label", label: "", css: "optLbl", template: optLblTemplate},
-							{id: "optBtn11", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
-							{id: "optLbl11", view: "label", label: "", css: "optLbl", template: optLblTemplate}
-						], height: row_height, id: "lytBtns7"},
-						{cols: [
-							{id: "optBtn20", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
-							{id: "optLbl20", view: "label", label: "", css: "optLbl", template: optLblTemplate},
-							{id: "optBtn21", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
-							{id: "optLbl21", view: "label", label: "", css: "optLbl", template: optLblTemplate}
-						], height: row_height, id: "lytBtns8"},
-						{cols: [
-							{id: "optBtn30", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
-							{id: "optLbl30", view: "label", label: "", css: "optLbl", template: optLblTemplate},
-							{id: "optBtn31", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
-							{id: "optLbl31", view: "label", label: "", css: "optLbl", template: optLblTemplate}
-						], height: row_height, id: "lytBtns9"},
-						{cols: [
-							{id: "optBtn40", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
-							{id: "optLbl40", view: "label", label: "", css: "optLbl", template: optLblTemplate},
-							{id: "optBtn41", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
-							{id: "optLbl41", view: "label", label: "", css: "optLbl", template: optLblTemplate}
-						], height: row_height, id: "lytBtns10"},
-						{cols: [
-							{id: "optBtn50", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
-							{id: "optLbl50", view: "label", label: "", css: "optLbl", template: optLblTemplate},
-							{id: "toOtherOptPad", view: "button", type: "htmlbutton", label: "More...", click: toOtherOptPadClicked, width: btn_height*2}
-						], height: row_height, id: "lytBtns11"}
-					], id: "optPad"}
-				]},
-				{id: "lblDisclaimer", view: "label", width: "100%", height: disclaimer_height, click: disclaimerClicked, template: '<span style="line-height: 150%;">'+endlabel+'</span>', css: "disclaimer"+sizeName}
-			]}
-		]
+			rows: [lytTabsCfg, lytPadsCfg]}
+		];
+	}
+	else {
+		layout = [
+			{width: spacer_width, id: 'lytSpacer0'},
+			{width: full_width,
+			id: "lytTop",
+			rows: [lytStatusCfg, lytStackCfg, txtEntryCfg, lytTabsCfg, lytPadsCfg, lblDisclaimerCfg]}
+		];
+	}
+	ui = webix.ui({
+		width: winWidth,
+		id: "lytWindow",
+		cols: layout
 	});
+	ui_landscape = landscape;
 
 	if (sizeName != "Scalable") {
 		$$("lytWindow").removeView("lytSpacer0");
@@ -248,11 +268,10 @@ function getSizes(winWidth, winHeight) {
 		"disclaimer_height": 44
 	};
 
-	// In a landscape window, the calculator is narrow (limited by the
-	// height), so the disclaimer needs another line
 	if (winWidth > winHeight) {
-		result['disclaimer_height'] = 58;
+		return getLandscapeSizes(winWidth, winHeight, result);
 	}
+	result['landscape'] = false;
 
 	// Assume everything is a proportion of tab_width (apart from the
 	// disclaimer, which is fixed)
@@ -301,6 +320,32 @@ function getSizes(winWidth, winHeight) {
 	return result;
 }
 
+// For a window wider than it is tall (e.g. a phone turned sideways): the
+// displays on the left and the keys on the right, using the full height
+function getLandscapeSizes(winWidth, winHeight, result) {
+	var vfudge = 10;
+	var hfudge = 8;
+	var gap = 8;
+	result['landscape'] = true;
+
+	// Keys height = tab+(6*btn) = tab*(1+(6*64/96)) = tab*5
+	var tw_from_height = (winHeight-vfudge)/5.0;
+	// Leave at least 40% of the width for the displays
+	var tw_from_width = (winWidth*0.6)/5.0;
+	result['tab_width'] = Math.min(tw_from_height, tw_from_width);
+	result['btn_height'] = result['tab_width']*64.0/96.0;
+	result['row_height'] = result['btn_height'];
+	result['entry_height'] = result['btn_height'];
+	result['status_height'] = result['tab_width']*15.0/96.0;
+	result['full_width'] = (result['tab_width']*5)-4;
+	result['spacer_width'] = gap;
+	result['display_width'] = winWidth-hfudge-gap-result['full_width'];
+	// The stack takes the rest of the height
+	result['stack_height'] = winHeight - vfudge - result['status_height'] -
+		result['entry_height'] - result['disclaimer_height'];
+	return result;
+}
+
 function updateFontSizes(sizeInfo) {
 	var btn_font_size = (sizeInfo['btn_height'] * 100.0/64.0);
 	sc_button_style.innerHTML = '.btnScalable button { font-size: ' + btn_font_size.toFixed(0) + '%; }';
@@ -316,6 +361,10 @@ function updateFontSizes(sizeInfo) {
 
 function resizeHandler() {
 	var s = getSizes(window_width, window_height);
+	if (s['landscape'] != ui_landscape) {
+		rebuildUi();
+		return;
+	}
 	updateFontSizes(s);
 
 	$$("lytBtns0").define("height", s['row_height']);
@@ -359,11 +408,30 @@ function resizeHandler() {
 	$$("imOptPad").define("width", s['tab_width']);
 	$$("imOptPad").define("height", s['tab_width']);
 	
+	if (s['landscape']) {
+		$$("lytDisplay").define("width", s['display_width']);
+	}
 	$$("lytTop").define("width", s['full_width']);
 	$$("lytSpacer0").define("width", s['spacer_width']);
 	$$("lblDisclaimer").define("height", s['disclaimer_height']);
 	$$("lytWindow").define("width", window_width);
 	$$("lytWindow").resize(true);
+}
+
+// Lay the calculator out again from scratch (for the other orientation),
+// keeping the selected keypad
+function rebuildUi() {
+	ui.destructor();
+	setupUi(size_name, window_width, window_height);
+	$$("txtEntry").attachEvent("onKeyPress", keypressHandler);
+
+	var savedReturnToNumPad = returnToNumPad;
+	var tab = lastTab;
+	lastTab = "";
+	tabSelect(tab);
+	returnToNumPad = savedReturnToNumPad;
+	updateDisplays();
+	webix.UIManager.setFocus($$("txtEntry"));
 }
 
 function init() {
