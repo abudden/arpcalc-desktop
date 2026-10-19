@@ -39,8 +39,31 @@ Module.onRuntimeInitialized = _ => {
 	var screenwidth = (window.innerWidth > 0) ? window.innerWidth : screen.width;
 	var screenheight = (window.innerHeight > 0) ? window.innerHeight : screen.height;
 
-	if (screenwidth < 1000) {
-	    document.body.style.zoom = "260%";
+	/* On a phone or tablet (a touch screen), or in a window too narrow for
+	 * the fixed size, fill the window and follow it as it changes (e.g. when
+	 * a phone is turned sideways).
+	 */
+	var touch = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+	if (touch || (screenwidth < initial_window_width)) {
+	    size_name = "Scalable";
+	    window_width = screenwidth;
+	    window_height = screenheight;
+	    initial_window_width = screenwidth;
+	    initial_window_height = screenheight;
+
+	    var resize_timer = null;
+	    var resized = function() {
+	        clearTimeout(resize_timer);
+	        resize_timer = setTimeout(function() {
+	            if ((window.innerWidth != window_width) || (window.innerHeight != window_height)) {
+	                window_width = window.innerWidth;
+	                window_height = window.innerHeight;
+	                resizeHandler();
+	            }
+	        }, 100);
+	    };
+	    window.addEventListener("resize", resized);
+	    window.addEventListener("orientationchange", resized);
 	}
     init();
 };

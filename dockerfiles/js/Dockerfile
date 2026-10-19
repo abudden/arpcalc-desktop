@@ -1,4 +1,6 @@
-FROM emscripten/emsdk
+# A fixed version, so that rebuilding the image doesn't pick up changes (newer
+# versions have needed em++ rather than emcc, and a writable cache)
+FROM emscripten/emsdk:6.0.12
 
 RUN apt-get update && apt install -y lzip
 
@@ -23,6 +25,10 @@ RUN apt-get update && apt install -y nodejs rsync
 RUN npm install terser -g
 
 RUN apt-get install -y mercurial
+
+# The build runs as uid 1000 (see docker-compose.yml), which in recent emsdk
+# images can't write to Emscripten's cache
+RUN chmod -R a+rwX /emsdk/upstream/emscripten/cache
 
 WORKDIR /src
 CMD ["bash", "./dockerfiles/js/dkr_build_js.sh"]
