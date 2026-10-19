@@ -22,6 +22,7 @@ var storeMode = "None";
 var lastStoreTab = "romanupperpad";
 var buttonMap = {};
 var btn_folder = "none";
+var row_height;
 
 var sc_standard_style;
 var sc_option_style;
@@ -33,6 +34,7 @@ var endlabel = 'By using this software you agree to the terms described in the s
 
 function setupUi(sizeName, winWidth, winHeight) {
 	btn_folder = "96";
+	row_height = btn_height;
 	var full_width = (tab_width*5)-4;
 	var spacer_width = 0;
 
@@ -63,6 +65,7 @@ function setupUi(sizeName, winWidth, winHeight) {
 		tab_width = s['tab_width'];
 		full_width = s['full_width'];
 		btn_height = s['btn_height'];
+		row_height = s['row_height'];
 
 		entry_height = s['entry_height'];
 		stack_height = s['stack_height'];
@@ -124,7 +127,7 @@ function setupUi(sizeName, winWidth, winHeight) {
 							{view: "button", type: "htmlbutton", id: "b03", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b04", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b05", label: "", click: buttonClicked}
-						], height: btn_height, id: "lytBtns0"},
+						], height: row_height, id: "lytBtns0"},
 						{cols: [
 							{view: "button", type: "htmlbutton", id: "b10", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b11", label: "", click: buttonClicked},
@@ -132,7 +135,7 @@ function setupUi(sizeName, winWidth, winHeight) {
 							{view: "button", type: "htmlbutton", id: "b13", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b14", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b15", label: "", click: buttonClicked}
-						], height: btn_height, id: "lytBtns1"},
+						], height: row_height, id: "lytBtns1"},
 						{cols: [
 							{view: "button", type: "htmlbutton", id: "b20", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b21", label: "", click: buttonClicked},
@@ -140,7 +143,7 @@ function setupUi(sizeName, winWidth, winHeight) {
 							{view: "button", type: "htmlbutton", id: "b23", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b24", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b25", label: "", click: buttonClicked}
-						], height: btn_height, id: "lytBtns2"},
+						], height: row_height, id: "lytBtns2"},
 						{cols: [
 							{view: "button", type: "htmlbutton", id: "b30", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b31", label: "", click: buttonClicked},
@@ -148,7 +151,7 @@ function setupUi(sizeName, winWidth, winHeight) {
 							{view: "button", type: "htmlbutton", id: "b33", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b34", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b35", label: "", click: buttonClicked}
-						], height: btn_height, id: "lytBtns3"},
+						], height: row_height, id: "lytBtns3"},
 						{cols: [
 							{view: "button", type: "htmlbutton", id: "b40", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b41", label: "", click: buttonClicked},
@@ -156,7 +159,7 @@ function setupUi(sizeName, winWidth, winHeight) {
 							{view: "button", type: "htmlbutton", id: "b43", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b44", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b45", label: "", click: buttonClicked}
-						], height: btn_height, id: "lytBtns4"},
+						], height: row_height, id: "lytBtns4"},
 						{cols: [
 							{view: "button", type: "htmlbutton", id: "b50", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b51", label: "", click: buttonClicked},
@@ -164,48 +167,48 @@ function setupUi(sizeName, winWidth, winHeight) {
 							{view: "button", type: "htmlbutton", id: "b53", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b54", label: "", click: buttonClicked},
 							{view: "button", type: "htmlbutton", id: "b55", label: "", click: buttonClicked}
-						], height: btn_height, id: "lytBtns5"}
+						], height: row_height, id: "lytBtns5"}
 					], id: "btnPad"},
 					// Opt Pads
 					{rows: [
 						{cols: [
-							{id: "optBtn00", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_height+"/blank.png", width: btn_height},
+							{id: "optBtn00", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
 							{id: "optLbl00", view: "label", label: "", css: "optLbl", template: optLblTemplate},
-							{id: "optBtn01", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_height+"/blank.png", width: btn_height},
+							{id: "optBtn01", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
 							{id: "optLbl01", view: "label", label: "", css: "optLbl", template: optLblTemplate}
-						], height: btn_height, id: "lytBtns6"},
+						], height: row_height, id: "lytBtns6"},
 						{cols: [
-							{id: "optBtn10", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_height+"/blank.png", width: btn_height},
+							{id: "optBtn10", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
 							{id: "optLbl10", view: "label", label: "", css: "optLbl", template: optLblTemplate},
-							{id: "optBtn11", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_height+"/blank.png", width: btn_height},
+							{id: "optBtn11", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
 							{id: "optLbl11", view: "label", label: "", css: "optLbl", template: optLblTemplate}
-						], height: btn_height, id: "lytBtns7"},
+						], height: row_height, id: "lytBtns7"},
 						{cols: [
-							{id: "optBtn20", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_height+"/blank.png", width: btn_height},
+							{id: "optBtn20", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
 							{id: "optLbl20", view: "label", label: "", css: "optLbl", template: optLblTemplate},
-							{id: "optBtn21", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_height+"/blank.png", width: btn_height},
+							{id: "optBtn21", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
 							{id: "optLbl21", view: "label", label: "", css: "optLbl", template: optLblTemplate}
-						], height: btn_height, id: "lytBtns8"},
+						], height: row_height, id: "lytBtns8"},
 						{cols: [
-							{id: "optBtn30", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_height+"/blank.png", width: btn_height},
+							{id: "optBtn30", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
 							{id: "optLbl30", view: "label", label: "", css: "optLbl", template: optLblTemplate},
-							{id: "optBtn31", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_height+"/blank.png", width: btn_height},
+							{id: "optBtn31", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
 							{id: "optLbl31", view: "label", label: "", css: "optLbl", template: optLblTemplate}
-						], height: btn_height, id: "lytBtns9"},
+						], height: row_height, id: "lytBtns9"},
 						{cols: [
-							{id: "optBtn40", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_height+"/blank.png", width: btn_height},
+							{id: "optBtn40", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
 							{id: "optLbl40", view: "label", label: "", css: "optLbl", template: optLblTemplate},
-							{id: "optBtn41", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_height+"/blank.png", width: btn_height},
+							{id: "optBtn41", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
 							{id: "optLbl41", view: "label", label: "", css: "optLbl", template: optLblTemplate}
-						], height: btn_height, id: "lytBtns10"},
+						], height: row_height, id: "lytBtns10"},
 						{cols: [
-							{id: "optBtn50", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_height+"/blank.png", width: btn_height},
+							{id: "optBtn50", view: "button", type: "image", click: optButtonClicked, image: resource_root+"/images/"+btn_folder+"/blank.png", width: row_height},
 							{id: "optLbl50", view: "label", label: "", css: "optLbl", template: optLblTemplate},
 							{id: "toOtherOptPad", view: "button", type: "htmlbutton", label: "More...", click: toOtherOptPadClicked, width: btn_height*2}
-						], height: btn_height, id: "lytBtns11"}
+						], height: row_height, id: "lytBtns11"}
 					], id: "optPad"}
 				]},
-				{id: "lblDisclaimer", view: "label", width: "100%", height: disclaimer_height, click: disclaimerClicked, template: '<span style="line-height: 150%;">'+endlabel+'</span>'}
+				{id: "lblDisclaimer", view: "label", width: "100%", height: disclaimer_height, click: disclaimerClicked, template: '<span style="line-height: 150%;">'+endlabel+'</span>', css: "disclaimer"+sizeName}
 			]}
 		]
 	});
@@ -240,13 +243,23 @@ function getSizes(winWidth, winHeight) {
 		"status_height": 15,
 		"spacer_width": 0,
 		"btn_height": 64,
-		"disclaimer_height": 96
+		// Smaller than in the fixed sizes, with smaller text (see
+		// disclaimerScalable in arpcalc.html), to leave more room on a phone
+		"disclaimer_height": 44
 	};
 
-	// Assume everything is a proportion of tab_width
-	var vfudge = 30;
-	var hfudge = 20;
-	var spacer_fudge = -15;
+	// In a landscape window, the calculator is narrow (limited by the
+	// height), so the disclaimer needs another line
+	if (winWidth > winHeight) {
+		result['disclaimer_height'] = 58;
+	}
+
+	// Assume everything is a proportion of tab_width (apart from the
+	// disclaimer, which is fixed)
+	// (this mode fills the window, so there's no scroll bar to allow for)
+	var vfudge = 10 + result['disclaimer_height'];
+	var hfudge = 8;
+	var spacer_fudge = 0;
 
 	// Window width = simply (tab_width*5)+hfudge
 	var tw_from_width = (winWidth-hfudge)/5.0;
@@ -270,6 +283,7 @@ function getSizes(winWidth, winHeight) {
 	}
 	result['stack_height'] = result['tab_width'];
 	result['btn_height'] = result['tab_width']*64.0/96.0;
+	result['row_height'] = result['btn_height'];
 	result['entry_height'] = result['btn_height'];
 	result['status_height'] = result['tab_width']*15.0/96.0;
 	result['full_width'] = (result['tab_width']*5)-4;
@@ -277,7 +291,12 @@ function getSizes(winWidth, winHeight) {
 	if (constraint == "width") {
 		// Update stack height
 		var height_calculated = vfudge + result['tab_width']*655/96.0;
-		result['stack_height'] += (winHeight-height_calculated);
+		var spare = winHeight-height_calculated;
+		// On a phone held upright, use some of the spare height for taller
+		// buttons (easier to press) and the rest for the stack
+		var extra_row_height = Math.max(0, Math.min(spare*0.5/6.0, result['btn_height']*0.4));
+		result['row_height'] += extra_row_height;
+		result['stack_height'] += spare - (6*extra_row_height);
 	}
 	return result;
 }
@@ -299,34 +318,34 @@ function resizeHandler() {
 	var s = getSizes(window_width, window_height);
 	updateFontSizes(s);
 
-	$$("lytBtns0").define("height", s['btn_height']);
-	$$("lytBtns1").define("height", s['btn_height']);
-	$$("lytBtns2").define("height", s['btn_height']);
-	$$("lytBtns3").define("height", s['btn_height']);
-	$$("lytBtns4").define("height", s['btn_height']);
-	$$("lytBtns5").define("height", s['btn_height']);
-	$$("lytBtns6").define("height", s['btn_height']);
-	$$("lytBtns7").define("height", s['btn_height']);
-	$$("lytBtns8").define("height", s['btn_height']);
-	$$("lytBtns9").define("height", s['btn_height']);
-	$$("lytBtns10").define("height", s['btn_height']);
-	$$("lytBtns11").define("height", s['btn_height']);
+	$$("lytBtns0").define("height", s['row_height']);
+	$$("lytBtns1").define("height", s['row_height']);
+	$$("lytBtns2").define("height", s['row_height']);
+	$$("lytBtns3").define("height", s['row_height']);
+	$$("lytBtns4").define("height", s['row_height']);
+	$$("lytBtns5").define("height", s['row_height']);
+	$$("lytBtns6").define("height", s['row_height']);
+	$$("lytBtns7").define("height", s['row_height']);
+	$$("lytBtns8").define("height", s['row_height']);
+	$$("lytBtns9").define("height", s['row_height']);
+	$$("lytBtns10").define("height", s['row_height']);
+	$$("lytBtns11").define("height", s['row_height']);
 
 	$$('lytStatus').define('height', s['status_height']);
 	$$('lytStack').define('height', s['stack_height']);
 	$$('txtEntry').define('height', s['entry_height']);
 
-	$$("optBtn00").define("width", s['btn_height']);
-	$$("optBtn01").define("width", s['btn_height']);
-	$$("optBtn10").define("width", s['btn_height']);
-	$$("optBtn11").define("width", s['btn_height']);
-	$$("optBtn20").define("width", s['btn_height']);
-	$$("optBtn21").define("width", s['btn_height']);
-	$$("optBtn30").define("width", s['btn_height']);
-	$$("optBtn31").define("width", s['btn_height']);
-	$$("optBtn40").define("width", s['btn_height']);
-	$$("optBtn41").define("width", s['btn_height']);
-	$$("optBtn50").define("width", s['btn_height']);
+	$$("optBtn00").define("width", s['row_height']);
+	$$("optBtn01").define("width", s['row_height']);
+	$$("optBtn10").define("width", s['row_height']);
+	$$("optBtn11").define("width", s['row_height']);
+	$$("optBtn20").define("width", s['row_height']);
+	$$("optBtn21").define("width", s['row_height']);
+	$$("optBtn30").define("width", s['row_height']);
+	$$("optBtn31").define("width", s['row_height']);
+	$$("optBtn40").define("width", s['row_height']);
+	$$("optBtn41").define("width", s['row_height']);
+	$$("optBtn50").define("width", s['row_height']);
 	$$("toOtherOptPad").define("width", s['btn_height']*2);
 
 	$$("imNumPad").define("width", s['tab_width']);
@@ -342,6 +361,7 @@ function resizeHandler() {
 	
 	$$("lytTop").define("width", s['full_width']);
 	$$("lytSpacer0").define("width", s['spacer_width']);
+	$$("lblDisclaimer").define("height", s['disclaimer_height']);
 	$$("lytWindow").define("width", window_width);
 	$$("lytWindow").resize(true);
 }
@@ -504,7 +524,7 @@ function optButtonClicked(args) {
 	jscalc.callOptionClickAction(optKey);
 	var icon = jscalc.callOptionIconAction(optKey);
 	var icon_path = jscalc.getImageForDrawable(icon);
-	var image_path = resource_root+"/images/"+btn_height+icon_path;
+	var image_path = resource_root+"/images/"+btn_folder+icon_path;
 	optBtn.define({'image': image_path});
 	optBtn.refresh();
 	if (optBtn.data["requires_restart"]) {

@@ -2,7 +2,7 @@
 mkdir -p output/js
 
 echo "Compiling to wasm"
-emcc --bind -O3 --std=c++20 -x c++ \
+em++ --bind -O3 --std=c++20 -x c++ \
 	-o output/js/calclib.js \
 	-Iinc \
 	-I/opt/lib/include \
