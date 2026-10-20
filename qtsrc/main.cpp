@@ -55,12 +55,34 @@ static void prewarmDirect3D()
 }
 #endif
 
+// With --preload, load everything that start-up loads (the DLLs, Qt's
+// plugins, the graphics drivers and the font) without showing a window, then
+// exit.  Run when logging in, this means that the antivirus scans of the
+// files (and reading them from disk) are done before ARPCalc is first used,
+// so that the first real start after a reboot is as quick as the rest.
+static bool preloadRequested(int argc, char *argv[])
+{
+	for (int i=1;i<argc;i++) {
+		if (strcmp(argv[i], "--preload") == 0) {
+			return true;
+		}
+	}
+	return false;
+}
+
 int main(int argc, char *argv[])
 {
 	StartupTiming timing(argc, argv);
+	bool preload = preloadRequested(argc, argv);
 
 #ifdef Q_OS_WIN
-	std::thread(prewarmDirect3D).detach();
+	std::thread direct3D(prewarmDirect3D);
+	if (preload) {
+		direct3D.join();
+	}
+	else {
+		direct3D.detach();
+	}
 #endif
 
 	installCrashLogger(version);
@@ -68,6 +90,13 @@ int main(int argc, char *argv[])
 	// Creates an instance of QApplication
 	QApplication a(argc, argv);
 	timing.mark("QApplication");
+
+	if (preload) {
+		QFontDatabase::addApplicationFont(":/fonts/ARPCalcSans-Regular.ttf");
+		a.style(); // loads the style plugin
+		QImageReader::supportedImageFormats(); // and the image format ones
+		return 0;
+	}
 
 	// ARPCalc Sans (Noto Sans plus the arrows and maths symbols from Noto Sans
 	// Math: see tools/make_font.py) is built in, so the app looks the same

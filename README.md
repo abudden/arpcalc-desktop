@@ -99,6 +99,8 @@ The Windows container builds two versions of ARPCalc, both zipped into `publish/
 
 Run `ARPCalc.exe --startup-timing` to append a line to `startup-timing.log` (next to `ARPCalc.exe`, or in `%TEMP%` if that folder isn't writable) giving the time at which each stage of start-up was reached.  The times are measured from when Windows created the process, so `main()` is the time taken to load the DLLs (including any antivirus scanning of them), and the CPU time shows how much of the total was spent working rather than waiting.
 
+On some PCs (e.g. with antivirus software that forgets which files it has checked when the PC restarts) the first start after a reboot is much slower than the rest.  `ARPCalc.exe --preload` loads everything that start-up loads, without showing a window, and then exits, so running it when you log in takes that hit before you first use ARPCalc.  To do that, press Win+R, enter `shell:startup` and, in the folder that opens, create a shortcut to `ARPCalc.exe` with ` --preload` added to the end of its target (after the closing quote if there is one).
+
 When installing a new build, delete the old `plugins` folder (and old DLLs) rather than unzipping over it: Qt reads every plugin it finds in the plugin folders it uses, so leftover plugins slow start-up.
 
 ## Build Notes for Compilation On Windows
