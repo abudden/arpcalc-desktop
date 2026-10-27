@@ -21,8 +21,10 @@ RUN emconfigure ./configure --host none --prefix=/opt/lib --with-gmp=/opt/lib
 RUN make
 RUN make install
 
-RUN apt-get update && apt install -y nodejs rsync
-RUN npm install terser -g
+# Node (and npm) come with emsdk.  A fixed terser version, so that
+# rebuilding the image doesn't pick up whatever npm has that day.
+RUN apt-get update && apt install -y rsync
+RUN npm install -g terser@5.51.2
 
 RUN apt-get install -y mercurial
 
